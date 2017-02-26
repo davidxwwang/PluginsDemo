@@ -24,3 +24,23 @@
 
 
 @end
+
+@interface AlisResponse : NSObject
+
+- (instancetype)initWithInfo:(NSDictionary *)info;
+
+@property(copy,nonatomic)NSDictionary *responseInfo;
+
+@end
+
+
+
+@interface AlisError : NSObject
+
+@property(copy,nonatomic)NSString *name;
+@property(copy,nonatomic)NSDictionary *userInfo;
+@property(assign,nonatomic)NSInteger code;
+@property(copy,nonatomic)NSString *detailInfo;
+
+@end
+

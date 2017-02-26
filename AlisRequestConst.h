@@ -8,6 +8,16 @@
 
 #ifndef AlisRequestConst_h
 #define AlisRequestConst_h
+#import <Foundation/Foundation.h>
+/**
+ 网络状况
+ */
+typedef NS_ENUM(NSInteger, AlisNetworkReachabilityStatus) {
+    AlisNetworkReachabilityStatusUnknown          = -1,
+    AlisNetworkReachabilityStatusNotReachable     = 0,
+    AlisNetworkReachabilityStatusReachableViaWWAN = 1,
+    AlisNetworkReachabilityStatusReachableViaWiFi = 2,
+};
 /**
  请求类型
  */

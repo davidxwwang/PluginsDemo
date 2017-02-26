@@ -13,64 +13,45 @@
 
 @implementation SDWebimagePlugin
 
-//- (void)perseConfig:(AlisRequestConfig *)requestConfig
-//{
-//    
-//
-//}
-
-//- (void)perseRequest:(AlisRequest *)request
-//{
+- (void)perseRequest:(AlisRequest *)request config:(AlisRequestConfig *)config
+{
 //    __weak typeof(self) weakSelf = self;
 //    __weak typeof(request) weakRequest = request;
 //    request.startBlock = ^(void){
-//        [weakSelf startRequest:weakRequest];
+//        [weakSelf startRequest:weakRequest config:config];
 //    };
 //    
 //    request.cancelBlock = ^(void){
-//        //[weakSelf startRequest:weakRequest];
+//        [weakSelf cancelRequest:weakRequest];
 //    };
-//    
-//}
-
-- (void)perseRequest:(AlisRequest *)request config:(AlisRequestConfig *)config
-{
-
-    __weak typeof(self) weakSelf = self;
-    __weak typeof(request) weakRequest = request;
-    request.startBlock = ^(void){
-        [weakSelf startRequest:weakRequest config:config];
-    };
-    
-    request.cancelBlock = ^(void){
-        //[weakSelf startRequest:weakRequest];
-    };
+    [self startRequest:request config:config];
     
 }
 
 - (void)startRequest:(AlisRequest *)request config:(AlisRequestConfig *)config
 {
-    return;
-    NSString *urlString = nil;//[NSMutableString string];
-    if (request.server) {
-        if (request.api) {
-            urlString = [NSString stringWithFormat:@"%@%@",request.server,request.api];
-        }
-    }else{
-        if (request.useGeneralServer == YES) {
-            urlString = [NSString stringWithFormat:@"%@%@",config.generalServer,request.api];
-        }
-    }
-    
-    NSAssert(urlString, @"url should not nil");
-    
-    NSURL *url = [NSURL URLWithString:urlString];
+//    return;
+//    NSString *urlString = nil;//[NSMutableString string];
+//    if (request.server) {
+//        if (request.api) {
+//            urlString = [NSString stringWithFormat:@"%@%@",request.server,request.api];
+//        }
+//    }else{
+//        if (request.useGeneralServer == YES) {
+//            urlString = [NSString stringWithFormat:@"%@%@",config.generalServer,request.api];
+//        }
+//    }
+//    
+//    NSAssert(urlString, @"url should not nil");
+//    
+//    NSURL *url = [NSURL URLWithString:urlString];
     
     //第三方的请求发起
-    [[SDWebImageManager sharedManager] downloadImageWithURL:url options:SDWebImageContinueInBackground progress:^(NSInteger receivedSize, NSInteger expectedSize) {
-        
-        //request.
-        
+    request.bindRequest = [[SDWebImageManager sharedManager] downloadImageWithURL:request.url options:SDWebImageContinueInBackground progress:^(NSInteger receivedSize, NSInteger expectedSize) {
+        if (request.progressBlock) {
+            request.progressBlock(receivedSize,expectedSize);
+        }
+
     } completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
         if (request.finishBlock) {
             AlisResponse *response = [self perseResponse:image request:request];
@@ -81,19 +62,27 @@
 
 }
 
-
-- (AlisResponse *)perseResponse:(id)remoteResponse request:(AlisRequest *)request
+- (AlisResponse *)perseResponse:(id)rawResponse request:(AlisRequest *)request
 {
-    //do sth
-    return nil;
+    if ( !rawResponse || ![rawResponse isKindOfClass:[UIImage class]]) {
+        return nil;
+    }
+    NSDictionary *data = @{@"image":rawResponse};
+    AlisResponse *response = [[AlisResponse alloc]initWithInfo:data];
+    return response;
 }
 
-- (AlisError *)perseError:(id)remoteError
+- (AlisError *)perseError:(id)rawError
 {
-    //do sth 
-    return nil;
-
-
+    if (!rawError || ![rawError isKindOfClass:[NSError class]]) {
+        return nil;
+    }
+    
+    AlisError *_error = [[AlisError alloc]init];
+    _error.code = ((NSError *)rawError).code;
+    _error.name = ((NSError *)rawError).domain;
+    _error.userInfo = ((NSError *)rawError).userInfo;
+    return _error;
 }
 
 @end

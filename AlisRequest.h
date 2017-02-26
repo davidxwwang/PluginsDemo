@@ -23,6 +23,11 @@ typedef void(^AlisRequestProgressRequest)(long long receivedSize, long long expe
 //请求所处的环境，先假定为发出请求的类，也可以新增属性：例如->网络环境，电量，内存状况等。
 @property(strong,nonatomic) NSString *context;
 
+//在业务层绑定的requestModel
+@property(copy,nonatomic,nullable) id bindRequestModel;
+//绑定真正的网络请求
+@property(copy,nonatomic,nullable) id bindRequest;
+
 //唯一的标示值
 @property(copy,nonatomic,nullable) NSString *identifier;
 
@@ -31,7 +36,7 @@ typedef void(^AlisRequestProgressRequest)(long long receivedSize, long long expe
 //path
 @property(copy,nonatomic,nullable) NSString *api;
 
-//由server和api组成，
+//由server和api组成，，首先server，其次是url,generalServer最低
 @property(copy,nonatomic,nullable) NSString *url;
 
 //请求参数
@@ -51,6 +56,9 @@ typedef void(^AlisRequestProgressRequest)(long long receivedSize, long long expe
  请求的HTTP方法, 默认`AlisHTTPMethodPOST`
  */
 @property (nonatomic, assign) AlisHTTPMethodType httpMethod;
+
+//重试次数
+@property(assign,nonatomic)NSInteger retryCount;
 
 //是否使用公共server，当request的server设置为nil情况，默认为yes
 @property (nonatomic, assign) BOOL useGeneralServer;

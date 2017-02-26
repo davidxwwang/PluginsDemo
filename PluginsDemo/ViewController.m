@@ -9,6 +9,10 @@
 #import "AlisPluginsManager.h"
 #import "ViewController.h"
 #import "VCService.h"
+#import "VCService2.h"
+
+static NSString *testServer = @"http://baobab.wdjcdn.com";
+static NSString *testApi = @"/1442142801331138639111.mp4";
 @interface ViewController ()
 
 @end
@@ -21,8 +25,9 @@
     // Do any additional setup after loading the view, typically from a nib.
     
     [[AlisPluginsManager manager] setupConfig:^(AlisRequestConfig *config) {
-        config.generalServer = @"www.baidu.com";
-        config.generalHeader = @{@"xx":@"yy"};
+        config.generalServer = testServer;
+        config.callBackQueue = dispatch_queue_create("david", DISPATCH_QUEUE_CONCURRENT);
+       // config.generalHeader = @{@"xx":@"yy"};
         
     }];
     [[AlisPluginsManager manager]registerALLPlugins];
@@ -32,9 +37,11 @@
 //    [[AlisPluginsManager manager]startRequest:request];
     
     //requestModel1 *requestModel = [[requestModel1 alloc]init];
-    VCService *service = [[VCService alloc]init];
+//    VCService *service = [[VCService alloc]init];
+//    [service askNetwork];
     
-    [service askNetwork];
+    VCService2 *service2 = [[VCService2 alloc]init];
+    [service2 ask];
     
 }
 

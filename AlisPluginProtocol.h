@@ -36,6 +36,7 @@
 
 - (void)perseRequest:(AlisRequest *)request config:(AlisRequestConfig *)config;
 
+- (id)start_Request:(AlisRequest *)request config:(AlisRequestConfig *)config;
 /**
  *  解析接口返回的remoteResponse，得到我们想要的数据。
  *

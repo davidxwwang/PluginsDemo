@@ -16,7 +16,15 @@ typedef void(^AlisRequestProgressRequest)(long long receivedSize, long long expe
 @protocol AlisRequestProtocol <NSObject>
 
 - (NSDictionary *)constructRequestParam;
-- (NSString *)url;
+- (NSDictionary *)requestHead;
+//相对路径
+- (NSString *)api;
+
+//表示此时此刻 需要服务的名称，一个类中很可能有好几个不同值。
+@property(copy,nonatomic)NSString *serviceName;
+
+//可以提供服务的项目
+@property(copy,nonatomic)NSArray *servicesArray;
 
 //或者可以改为代理
 @property(copy,nonatomic)AlisRequestFinishRequest businessLayer_requestFinishBlock;

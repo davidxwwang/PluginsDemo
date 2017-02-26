@@ -4,16 +4,22 @@
 //
 //  Created by alisports on 2017/2/22.
 //  Copyright © 2017年 alisports. All rights reserved.
-//
+//  把网络请求的每一个接口都看为一个资源
 #import "AlisRequestConfig.h"
 #import "AlisRequest.h"
 #import "AlisPluginProtocol.h"
 #import "AlisRequestProtocol.h"
+#import "AlisRequestContext.h"
 #import <Foundation/Foundation.h>
 
 @interface AlisPluginsManager : NSObject
 
 + (AlisPluginsManager *)manager;
+
+//所有请求的数组，请求发出，加入数组；请求结束，取消从数组中删掉；请求暂停不删除
+@property(strong,nonatomic,nullable)NSMutableArray *requestArray;
+
+@property(strong,nonatomic,nullable)AlisRequestContext *requestContext;
 
 - (void)registerPlugin:(id<AlisPluginProtocol>)plugin key:(NSString *)key;
 
@@ -26,8 +32,10 @@
 
 
 - (void)startRequest:(AlisRequest *)request;
-
 - (void)startRequestModel:(id<AlisRequestProtocol>)requestModel;
+
+- (void)cancelRequest:(AlisRequest *)request;
+- (void)cancelRequestByIdentifier:(NSString *)requestIdentifier;
 
 //设置请求的公有属性，server，head等
 @property(strong,nonatomic,nullable)AlisRequestConfig *config;

@@ -11,3 +11,21 @@
 @implementation AlisRequestConfig
 
 @end
+
+@implementation AlisResponse
+
+- (instancetype)initWithInfo:(NSDictionary *)info
+{
+    if (self == [super init]) {
+        self.responseInfo = info;
+    }
+    
+    return self;
+}
+@end
+
+
+@implementation AlisError
+
+@end
+
