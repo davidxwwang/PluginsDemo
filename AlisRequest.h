@@ -24,7 +24,10 @@ typedef void(^AlisRequestProgressRequest)(long long receivedSize, long long expe
 @property(strong,nonatomic) NSString *context;
 
 //在业务层绑定的requestModel
-@property(copy,nonatomic,nullable) id bindRequestModel;
+@property(strong,nonatomic,nullable) id<AlisRequestProtocol> bindRequestModel;
+//服务的名称 = <bindRequestModel + “／” + service名称（plist中定义的）>
+@property(strong,nonatomic,nullable) NSString *serviceName;
+
 //绑定真正的网络请求
 @property(copy,nonatomic,nullable) id bindRequest;
 
@@ -68,12 +71,33 @@ typedef void(^AlisRequestProgressRequest)(long long receivedSize, long long expe
 @property (nonatomic, assign) BOOL useGeneralParameters;
 
 
-@property(strong,nonatomic,nullable) id<AlisRequestProtocol> requestModel;
-
 @property(copy,nonatomic,nullable) AlisRequestStartRequest startBlock;
 @property(copy,nonatomic,nullable) AlisRequestCancelRequest cancelBlock;
 @property(copy,nonatomic,nullable) AlisRequestFinishRequest finishBlock;
 @property(copy,nonatomic,nullable) AlisRequestProgressRequest progressBlock;
 
+
+- (void)addFormDataWithName:(NSString *)name fileData:(NSData *)fileData;
+- (void)addFormDataWithName:(NSString *)name fileURL:(NSString *)fileURL;
+
+@property(strong,nonatomic)NSMutableArray *uploadFormDatas;
+
+@end
+
+
+//上传文件，都需要以下信息
+@interface AlisUpLoadFormData : NSObject
+
+@property(copy,nonatomic)NSString *name;
+@property(copy,nonatomic,nullable)NSString *fileName;
+
+//fileData优先级更高一些
+@property(copy,nonatomic,nullable)NSData *fileData;
+@property(copy,nonatomic,nullable)NSURL *fileURL;
+
+@property(copy,nonatomic,nullable)NSString *mimeType;
+
++ (instancetype)formUploadDataWithName:(NSString *)name fileData:(NSData *)fileData;
++ (instancetype)formUploadDataWithName:(NSString *)name fileURL:(NSString *)fileURL;
 
 @end

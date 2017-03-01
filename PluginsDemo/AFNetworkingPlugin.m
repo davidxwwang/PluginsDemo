@@ -30,6 +30,74 @@
 
 - (void)startRequest:(AlisRequest *)request config:(AlisRequestConfig *)config
 {
+    //上传
+    if (request.requestType == AlisRequestUpload) {
+        AFHTTPSessionManager  *sessionManager = [[AFHTTPSessionManager alloc] initWithBaseURL:nil];
+        //request
+        sessionManager.requestSerializer.timeoutInterval = request.timeoutInterval;
+        sessionManager.requestSerializer.stringEncoding = NSUTF8StringEncoding;
+        //  sessionManager.requestSerializer.networkServiceType = urlRequest.networkServiceType;
+        //  sessionManager.requestSerializer.cachePolicy = urlRequest.cachePolicy;
+        NSDictionary *headerInfo = request.header;
+        if ([headerInfo count] > 0) {
+            for (NSString *key in [headerInfo allKeys]) {
+                NSString *value = [headerInfo objectForKey:key];
+                if (value && [value isKindOfClass:[NSString class]]) {
+                    [sessionManager.requestSerializer setValue:value forHTTPHeaderField:key];
+                }
+            }
+        }
+
+        __block NSError *serializationError = nil;
+        NSMutableURLRequest *urlRequest = [sessionManager.requestSerializer multipartFormRequestWithMethod:@"POST" URLString:request.url parameters:request.parameters constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
+            [request.uploadFormDatas enumerateObjectsUsingBlock:^(AlisUpLoadFormData *obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                if (obj.fileData) {
+                    [formData appendPartWithFormData:obj.fileData name:obj.name];
+                }else if (obj.fileURL)
+                {
+                    NSError *fileError = nil;
+                    [formData appendPartWithFileURL:obj.fileURL name:obj.fileName error:&fileError];
+                    
+                    if (fileError) {
+                        serializationError = fileError;
+                        *stop = YES;
+                    }
+                }                
+            }];
+            
+        } error:&serializationError];
+        
+//        if (serializationError) {
+//            if (completionHandler) {
+//                dispatch_async(xm_request_completion_callback_queue(), ^{
+//                    completionHandler(nil, serializationError);
+//                });
+//            }
+//            return;
+//        }
+//        
+//        [self xm_processURLRequest:urlRequest byXMRequest:request];
+        
+//        NSURLSessionUploadTask *uploadTask = nil;
+//        __weak __typeof(self)weakSelf = self;
+//        uploadTask = [sessionManager
+//                      uploadTaskWithStreamedRequest:urlRequest
+//                                            progress:request.progressBlock
+//                                   completionHandler:^(NSURLResponse *response, id responseObject, NSError *error) {
+//                                    __strong __typeof(weakSelf)strongSelf = weakSelf;
+//        
+//                                       [strongSelf xm_processResponse:response
+//                                                                             object:responseObject
+//                                                                              error:error
+//                                                                            request:request
+//                                                                  completionHandler:completionHandler];
+//                                                 }];
+//        [uploadTask resume];
+
+       
+    }
+    
+    
     AFHTTPSessionManager  *sessionManager = [[AFHTTPSessionManager alloc] initWithBaseURL:nil];
     //request
     sessionManager.requestSerializer.timeoutInterval = request.timeoutInterval;
@@ -60,7 +128,7 @@
 //    __request.cachePolicy = urlRequest.cachePolicy;
     __request.allHTTPHeaderFields = request.header;
     //response
-    sessionManager.responseSerializer.acceptableContentTypes = [NSSet setWithObjects:@"application/json", @"text/json", @"text/javascript", @"text/xml", @"text/html", @"text/plain",nil];
+    sessionManager.responseSerializer.acceptableContentTypes = [NSSet setWithObjects:@"application/json", @"text/json", @"text/javascript", @"text/xml", @"text/html", @"text/plain",@"video/mp4",nil];
     [(AFJSONResponseSerializer *)sessionManager.responseSerializer setRemovesKeysWithNullValues:YES];
     //task
     NSURLSessionTask *task = [sessionManager dataTaskWithRequest:__request completionHandler:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
@@ -73,7 +141,10 @@
     NSURLSessionTask *task2 = [sessionManager dataTaskWithRequest:__request uploadProgress:^(NSProgress * _Nonnull uploadProgress) {
         
     } downloadProgress:^(NSProgress * _Nonnull downloadProgress) {
-        NSLog(@"%@ down load %lld",task2,downloadProgress.completedUnitCount/downloadProgress.totalUnitCount    );
+        if (request.progressBlock) {
+            request.progressBlock(downloadProgress.completedUnitCount,downloadProgress.totalUnitCount);
+        }
+        //NSLog(@"%@ down load %f",task2,  progress  );
     } completionHandler:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
          NSLog(@"finished"  );
         if (request.finishBlock) {

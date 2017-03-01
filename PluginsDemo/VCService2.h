@@ -10,5 +10,5 @@
 
 @interface VCService2 : VCService
 
-- (void)ask;
+- (void)customAsk;
 @end

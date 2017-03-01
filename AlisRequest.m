@@ -30,6 +30,43 @@
 
 }
 
+- (NSMutableArray<AlisUpLoadFormData *> *)uploadFormDatas {
+    if (!_uploadFormDatas) {
+        _uploadFormDatas = [NSMutableArray array];
+    }
+    return _uploadFormDatas;
+}
 
+- (void)addFormDataWithName:(NSString *)name fileData:(NSData *)fileData{
+    AlisUpLoadFormData *formData = [AlisUpLoadFormData formUploadDataWithName:name fileData:fileData];
+    [self.uploadFormDatas addObject:formData];
+
+}
+
+- (void)addFormDataWithName:(NSString *)name fileURL:(NSString *)fileURL{
+    AlisUpLoadFormData *formData = [AlisUpLoadFormData formUploadDataWithName:name fileURL:fileURL];
+    [self.uploadFormDatas addObject:formData];
+}
+
+@end
+
+
+@implementation AlisUpLoadFormData
+
++ (instancetype)formUploadDataWithName:(NSString *)name fileData:(NSData *)fileData
+{
+    AlisUpLoadFormData *formData = [[AlisUpLoadFormData alloc] init];
+    formData.name = name;
+    formData.fileData = fileData;
+    return formData;
+}
+
++ (instancetype)formUploadDataWithName:(NSString *)name fileURL:(NSURL *)fileURL
+{
+    AlisUpLoadFormData *formData = [[AlisUpLoadFormData alloc] init];
+    formData.name = name;
+    formData.fileURL = fileURL;
+    return formData;
+}
 
 @end

@@ -9,6 +9,8 @@
 #ifndef AlisRequestConst_h
 #define AlisRequestConst_h
 #import <Foundation/Foundation.h>
+
+@class AlisRequest;
 /**
  网络状况
  */
@@ -38,6 +40,14 @@ typedef NS_ENUM(NSInteger, AlisHTTPMethodType) {
     AlisHTTPMethodPUT    = 4,    //!< PUT
     AlisHTTPMethodPATCH  = 5,    //!< PATCH
 };
+
+typedef void(^AlisRequestConfigBlock)( AlisRequest *request);
+
+
+
+
+
+
 
 
 #endif /* AliRequestConst_h */

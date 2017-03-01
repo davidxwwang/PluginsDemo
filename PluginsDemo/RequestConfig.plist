@@ -1,10 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-<array>
-	<array>
-		<string>askLocation</string>
-		<string>askName</string>
-	</array>
-</array>
+<dict>
+	<key>VCService3</key>
+	<dict/>
+	<key>VCService2</key>
+	<dict>
+		<key>uploadImageAliyun</key>
+		<dict>
+			<key></key>
+			<string></string>
+		</dict>
+		<key>AskName</key>
+		<dict>
+			<key>httpMethod</key>
+			<string>get</string>
+			<key>api</key>
+			<string>/1442142801331138639111.mp4</string>
+		</dict>
+	</dict>
+</dict>
 </plist>

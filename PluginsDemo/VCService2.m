@@ -9,46 +9,44 @@
 #import "VCService2.h"
 #import "AlisRequest.h"
 #import "AlisRequestConfig.h"
+#import "AlisRequestManager.h"
 
 @implementation VCService2
 
+@synthesize candidateServices;
 
-- (NSString *)api
-{
-    if([self.serviceName isEqualToString:@""])
-    return nil;
+- (NSDictionary *)requestParams{
     return nil;
 }
+- (NSDictionary *)requestHead{
+    return nil;
+}
 
-- (instancetype)init{
-    if (self = [super init]) {
-        __weak typeof (self)weakself = self;
-        self.businessLayer_requestFinishBlock = ^(AlisRequest *request ,AlisResponse *response ,AlisError *error){
-            
-            NSLog(@"--->请求的服务方是%@",request.bindRequestModel);
-            //compare with service type
-            NSLog(@"在业务层完成了请求成功的回调");
-            for (NSString *service in weakself.servicesArray) {
-                if([request.bindRequestModel isEqualToString:service]){
-                    [weakself performSelector:@selector(server) withObject:nil];
-                }
-            }
-        };
-        
-        self.businessLayer_requestProgressBlock = ^(long long receivedSize, long long expectedSize){
-            NSLog(@"在业务层完成了请求成功的回调");
-        };
+- (NSString *)api{
+    if([self.serviceName isEqualToString:@"AskName"]){
+        return @"/1442142801331138639111.mp4";
+    }else
+    {
+        return self.candidateServices[@"api"];
     }
-    return self;
-    
 }
-- (void)ask
-{
-    for (NSString *serviceName in self.servicesArray) {
-        SEL xx = NSSelectorFromString(serviceName);
-        [self performSelector:xx];
+
+#pragma mark -- 服务区
+- (void)customAsk{
+    SEL serviceSEL = NSSelectorFromString(@"AskName");//AskName 是定义好的一种资源
+    [self performSelector:serviceSEL];
+    
+    sleep(3);
+    [[AlisRequestManager manager] cancel_Request:self];
+
+}
+
+- (void)handlerServiceResponse:(AlisRequest *)request response:(AlisResponse *)response{
+    NSLog(@"结果已经成功返回给了业务层了");
+    //根据请求服务的不同，做对应的处理。
+    if([request.serviceName isEqualToString:@"AskName"]){
     }
-    
 }
+
 
 @end

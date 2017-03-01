@@ -7,6 +7,7 @@
 //
 
 #import "AppDelegate.h"
+#import "WebViewJavascriptBridge_JS.h"
 
 @interface AppDelegate ()
 
@@ -17,6 +18,7 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
+    NSString *jsString = WebViewJavascriptBridge_js();
     return YES;
 }
 

@@ -1,25 +1,29 @@
 //
-//  AlisPluginsManager.m
+//  AlisRequestManager.m
 //  PluginsDemo
 //
 //  Created by alisports on 2017/2/22.
 //  Copyright © 2017年 alisports. All rights reserved.
 //
 #import <CommonCrypto/CommonDigest.h>
-#import "AlisPluginsManager.h"
+#import "AlisRequestManager.h"
 #import "AlisRequestContext.h"
 #import "AlisRequestConfig.h"
+#import "AlisPluginManager.h"
+#import "AlisRequestConst.h"
 
-@interface AlisPluginsManager ()
 
-@property(strong,nonatomic)NSMutableDictionary *pluginsDictionary;
+@interface AlisRequestManager ()
+
 @property(weak,nonatomic) id<AlisRequestProtocol>requestModel;
+
+@property(strong,nonatomic)AlisPluginManager *pluginManager;
 
 @end
 
-@implementation AlisPluginsManager
+@implementation AlisRequestManager
 
-+ (AlisPluginsManager *)manager
++ (AlisRequestManager *)manager
 {
     static id _manager = nil;
     static dispatch_once_t onceToken;
@@ -33,8 +37,8 @@
 - (instancetype)init
 {
     if (self = [super init]) {
-        self.pluginsDictionary = [NSMutableDictionary dictionary];
         self.requestContext = [AlisRequestContext shareContext];
+        self.pluginManager = [AlisPluginManager manager];
     }
     return self;
 }
@@ -48,50 +52,9 @@
     
 }
 
-#pragma mark -- plugin
-- (void)registerPlugin:(id<AlisPluginProtocol>)plugin key:(NSString *)key
-{
-}
-
-- (void)registerPlugin:(NSString *)key
-{
-}
-
-- (void)registerALLPlugins
-{
-    NSString *plistPath = @"/Users/david/Desktop/FrameWorkDavid/PluginsDemo/PluginsDemo/plugins.plist";//[[NSBundle mainBundle] pathForResource:@"plugin" ofType:@"plist"];
-    if (![[NSFileManager defaultManager] fileExistsAtPath:plistPath]) {
-        return;
-    }
-    
-    NSDictionary *pluginList = [[NSDictionary alloc] initWithContentsOfFile:plistPath];
-    [self.pluginsDictionary addEntriesFromDictionary:pluginList];
-    
-}
-
-- (id<AlisPluginProtocol>)plugin:(NSString *)key
-{
-    NSAssert(key, @"key should not nil");
-    NSAssert(self.pluginsDictionary  || self.pluginsDictionary.count > 0, @"pluginsDictionary has problems");
-    //这里应该判断是否有重复的key
-    NSArray *keys = self.pluginsDictionary.allKeys;
-    
-    if ([keys containsObject:key]) {
-        NSString *pluginString = self.pluginsDictionary[key];
-        Class class = NSClassFromString(pluginString);
-        id _object = [[class alloc] init];
-       // NSAssert(![_object conformsToProtocol:@protocol(AlisPluginProtocol)], @"the plugin do not conform 'AlisPluginProtocol'");
-        return _object;
-    }
-    else{
-        return nil;
-    }
-    return nil;
-}
-
 - (void)startRequest:(AlisRequest *)request
 {
-    id<AlisPluginProtocol> plugin = [self plugin:@"AFNetwoking"];
+    id<AlisPluginProtocol> plugin = [self.pluginManager plugin:@"AFNetwoking"];
     
     //在这里解析两部分，一部分是公共的--AlisRequestConfig，一部分是自己的,
     [plugin perseRequest:request config:_config];
@@ -104,14 +67,29 @@
 - (void)startRequestModel:(id<AlisRequestProtocol>)requestModel
 {
    // if (![self canRequest:requestModel]) return;
-    self.requestModel = requestModel;
     
     //request 请求的回调都在该类中
-    AlisRequest *request = [[AlisRequest alloc]init];
-    [self prepareRequest:request requestModel:requestModel];
-    [self startRequest:request];
-    request.bindRequestModel = requestModel.serviceName; //绑定业务层对应的requestModel
+//    AlisRequest *request = [[AlisRequest alloc]init];
+//    [self prepareRequest:request requestModel:requestModel];
+//    [self startRequest:request];
+//    request.bindRequestModel = requestModel.serviceName; //绑定业务层对应的requestModel
+    
+    [self start_Request:^(AlisRequest *request) {
+        request.bindRequestModel = requestModel; //绑定业务层对应的requestModel
+        request.serviceName = requestModel.serviceName;
+        [self prepareRequest:request requestModel:requestModel];
+    }];
 }
+
+
+
+- (void)start_Request:(AlisRequestConfigBlock)requestConfigBlock{
+    AlisRequest *request = [[AlisRequest alloc]init];
+    requestConfigBlock(request);
+    [self startRequest:request];
+}
+
+
 
 - (NSMutableArray *)requestArray{
     if (_requestArray == nil) {
@@ -122,15 +100,21 @@
 
 - (void)cancelRequest:(AlisRequest *)request{
     if (request == nil)  return;
-    
-//    if (request.cancelBlock) {
-//        request.cancelBlock();
-//        [self.requestArray removeObject:request];
-//    }
     if(request.bindRequest){
         [request.bindRequest cancel];
         [self.requestArray removeObject:request];
     }    
+}
+
+- (void)cancel_Request:(id<AlisRequestProtocol>)request{
+    __block AlisRequest *_request = nil;
+    [self.requestArray enumerateObjectsUsingBlock:^(AlisRequest *obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        if ([obj.bindRequestModel isEqual:request]) {
+            _request = obj.bindRequestModel;
+            *stop = YES;
+        }
+    }];
+    [self cancelRequest:_request];
 }
 
 - (void)cancelRequestByIdentifier:(NSString *)requestIdentifier{
@@ -152,6 +136,11 @@
 - (void)prepareRequest:(AlisRequest *)request requestModel:(id<AlisRequestProtocol>)requestModel{
     
     NSAssert([requestModel respondsToSelector:@selector(api)], @"request API should not nil");
+    
+    if ([requestModel respondsToSelector:@selector(requestType)]) {
+        request.requestType = [requestModel requestType];
+    }
+    
     NSString *urlString = nil;//[NSMutableString string];
     if (request.server) {
         if ([requestModel respondsToSelector:@selector(api)]) {
@@ -180,8 +169,8 @@
     }
     
     
-    if ([requestModel respondsToSelector:@selector(constructRequestParam)]) {
-        [parameters addEntriesFromDictionary:[requestModel constructRequestParam]];
+    if ([requestModel respondsToSelector:@selector(requestParams)]) {
+        [parameters addEntriesFromDictionary:[requestModel requestParams]];
     }
     if (request.useGeneralParameters) {
         [parameters addEntriesFromDictionary:self.config.generalParamters];
@@ -202,22 +191,22 @@
         }
     };
     
+    __weak typeof (request) weakRequest = request;
     request.progressBlock = ^(long long receivedSize, long long expectedSize){
         //各个业务层的回调
-        requestModel.businessLayer_requestProgressBlock(receivedSize,expectedSize);
+        weakRequest.bindRequestModel.businessLayer_requestProgressBlock(receivedSize,expectedSize);
     };
 }
 
 
-- (void)failureWithError:(AlisError *)error withRequest:(AlisRequest *)request
-{
+- (void)failureWithError:(AlisError *)error withRequest:(AlisRequest *)request{
+    __weak typeof (request) weakRequest = request;
     if (self.config.callBackQueue) {
-        __weak __typeof(self)weakSelf = self;
         dispatch_async(self.config.callBackQueue, ^{
-            weakSelf.requestModel.businessLayer_requestFinishBlock(request,nil,error);
+            weakRequest.bindRequestModel.businessLayer_requestFinishBlock(request,nil,error);
         });
     } else {
-        _requestModel.businessLayer_requestFinishBlock(request,nil,error);
+        weakRequest.bindRequestModel.businessLayer_requestFinishBlock(request,nil,error);
     }
     
     if (request.retryCount > 0 ) {
@@ -229,13 +218,14 @@
 
 - (void)successWithResponse:(AlisResponse *)response withRequest:(AlisRequest *)request
 {
+    __weak typeof (request) weakRequest = request;
     if (self.config.callBackQueue) {
-        __weak __typeof(self)weakSelf = self;
         dispatch_async(self.config.callBackQueue, ^{
-            weakSelf.requestModel.businessLayer_requestFinishBlock(request,response,nil);
+            weakRequest.bindRequestModel.businessLayer_requestFinishBlock(request,response,nil);
         });
-    } else {
-        _requestModel.businessLayer_requestFinishBlock(request,response,nil);
+    } else
+    {
+        weakRequest.bindRequestModel.businessLayer_requestFinishBlock(request,response,nil);
     }
     
    // [self clearBlocks:request];

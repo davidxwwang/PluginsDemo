@@ -25,6 +25,7 @@
 		632855CC1E5EF73100899B07 /* UIProgressView+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = 632855B91E5EF73100899B07 /* UIProgressView+AFNetworking.m */; };
 		632855CD1E5EF73100899B07 /* UIRefreshControl+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = 632855BB1E5EF73100899B07 /* UIRefreshControl+AFNetworking.m */; };
 		632855CE1E5EF73100899B07 /* UIWebView+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = 632855BD1E5EF73100899B07 /* UIWebView+AFNetworking.m */; };
+		632C89221E62CE87005C5A52 /* AlisPluginManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 632C89211E62CE87005C5A52 /* AlisPluginManager.m */; };
 		635683E71E5FCDC200A1C34B /* AFNetworkingPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = 635683E61E5FCDC200A1C34B /* AFNetworkingPlugin.m */; };
 		637E428C1E618362007EC5D3 /* VCService2.m in Sources */ = {isa = PBXBuildFile; fileRef = 637E428B1E618362007EC5D3 /* VCService2.m */; };
 		63860FED1E6006F000C922B7 /* AlisRequestContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 63860FEC1E6006F000C922B7 /* AlisRequestContext.m */; };
@@ -55,9 +56,11 @@
 		63C089561E5D301500B72BD5 /* UIView+WebCacheOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 63C089461E5D301500B72BD5 /* UIView+WebCacheOperation.m */; };
 		63C089591E5D30D400B72BD5 /* SDWebimagePlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = 63C089581E5D30D400B72BD5 /* SDWebimagePlugin.m */; };
 		63C0895C1E5D344900B72BD5 /* AlisRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 63C0895B1E5D344900B72BD5 /* AlisRequest.m */; };
-		63C0895F1E5D40AE00B72BD5 /* AlisPluginsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 63C0895E1E5D40AE00B72BD5 /* AlisPluginsManager.m */; };
+		63C0895F1E5D40AE00B72BD5 /* AlisRequestManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 63C0895E1E5D40AE00B72BD5 /* AlisRequestManager.m */; };
 		63C089611E5D5B7700B72BD5 /* plugins.plist in Resources */ = {isa = PBXBuildFile; fileRef = 63C089601E5D5B7700B72BD5 /* plugins.plist */; };
 		63C089681E5D802B00B72BD5 /* VCService.m in Sources */ = {isa = PBXBuildFile; fileRef = 63C089671E5D802B00B72BD5 /* VCService.m */; };
+		63CEB5931E6507A20056966E /* WebViewJavascriptBridge_JS.m in Sources */ = {isa = PBXBuildFile; fileRef = 63CEB5921E6507A20056966E /* WebViewJavascriptBridge_JS.m */; };
+		63E2B31D1E63CC5700C2D647 /* README in Resources */ = {isa = PBXBuildFile; fileRef = 63E2B31C1E63CC5700C2D647 /* README */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -116,6 +119,8 @@
 		632855BB1E5EF73100899B07 /* UIRefreshControl+AFNetworking.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIRefreshControl+AFNetworking.m"; sourceTree = "<group>"; };
 		632855BC1E5EF73100899B07 /* UIWebView+AFNetworking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIWebView+AFNetworking.h"; sourceTree = "<group>"; };
 		632855BD1E5EF73100899B07 /* UIWebView+AFNetworking.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIWebView+AFNetworking.m"; sourceTree = "<group>"; };
+		632C89201E62CE87005C5A52 /* AlisPluginManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AlisPluginManager.h; sourceTree = "<group>"; };
+		632C89211E62CE87005C5A52 /* AlisPluginManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AlisPluginManager.m; sourceTree = "<group>"; };
 		635683E51E5FCDC200A1C34B /* AFNetworkingPlugin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFNetworkingPlugin.h; sourceTree = "<group>"; };
 		635683E61E5FCDC200A1C34B /* AFNetworkingPlugin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFNetworkingPlugin.m; sourceTree = "<group>"; };
 		637E428A1E618362007EC5D3 /* VCService2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VCService2.h; sourceTree = "<group>"; };
@@ -177,12 +182,15 @@
 		63C089581E5D30D400B72BD5 /* SDWebimagePlugin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SDWebimagePlugin.m; sourceTree = "<group>"; };
 		63C0895A1E5D344900B72BD5 /* AlisRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AlisRequest.h; sourceTree = "<group>"; };
 		63C0895B1E5D344900B72BD5 /* AlisRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AlisRequest.m; sourceTree = "<group>"; };
-		63C0895D1E5D40AE00B72BD5 /* AlisPluginsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AlisPluginsManager.h; sourceTree = "<group>"; };
-		63C0895E1E5D40AE00B72BD5 /* AlisPluginsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AlisPluginsManager.m; sourceTree = "<group>"; };
+		63C0895D1E5D40AE00B72BD5 /* AlisRequestManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AlisRequestManager.h; sourceTree = "<group>"; };
+		63C0895E1E5D40AE00B72BD5 /* AlisRequestManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AlisRequestManager.m; sourceTree = "<group>"; };
 		63C089601E5D5B7700B72BD5 /* plugins.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = plugins.plist; sourceTree = "<group>"; };
 		63C089651E5D7EB400B72BD5 /* AlisRequestProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AlisRequestProtocol.h; sourceTree = "<group>"; };
 		63C089661E5D802B00B72BD5 /* VCService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VCService.h; sourceTree = "<group>"; };
 		63C089671E5D802B00B72BD5 /* VCService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VCService.m; sourceTree = "<group>"; };
+		63CEB5911E6507A20056966E /* WebViewJavascriptBridge_JS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebViewJavascriptBridge_JS.h; sourceTree = "<group>"; };
+		63CEB5921E6507A20056966E /* WebViewJavascriptBridge_JS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebViewJavascriptBridge_JS.m; sourceTree = "<group>"; };
+		63E2B31C1E63CC5700C2D647 /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -271,6 +279,8 @@
 		63C088B21E5D2A8F00B72BD5 = {
 			isa = PBXGroup;
 			children = (
+				63CEB5911E6507A20056966E /* WebViewJavascriptBridge_JS.h */,
+				63CEB5921E6507A20056966E /* WebViewJavascriptBridge_JS.m */,
 				632855981E5EF73100899B07 /* AFNetworking */,
 				63C089251E5D301500B72BD5 /* SDWebImage */,
 				63C088F11E5D2AD800B72BD5 /* Plugins */,
@@ -351,12 +361,15 @@
 				63C089651E5D7EB400B72BD5 /* AlisRequestProtocol.h */,
 				63C0895A1E5D344900B72BD5 /* AlisRequest.h */,
 				63C0895B1E5D344900B72BD5 /* AlisRequest.m */,
-				63C0895D1E5D40AE00B72BD5 /* AlisPluginsManager.h */,
-				63C0895E1E5D40AE00B72BD5 /* AlisPluginsManager.m */,
+				63C0895D1E5D40AE00B72BD5 /* AlisRequestManager.h */,
+				63C0895E1E5D40AE00B72BD5 /* AlisRequestManager.m */,
+				632C89201E62CE87005C5A52 /* AlisPluginManager.h */,
+				632C89211E62CE87005C5A52 /* AlisPluginManager.m */,
 				6328558F1E5E8B4E00899B07 /* AlisRequestConfig.h */,
 				632855901E5E8B4E00899B07 /* AlisRequestConfig.m */,
 				63860FEB1E6006F000C922B7 /* AlisRequestContext.h */,
 				63860FEC1E6006F000C922B7 /* AlisRequestContext.m */,
+				63E2B31C1E63CC5700C2D647 /* README */,
 			);
 			name = Plugins;
 			sourceTree = "<group>";
@@ -513,6 +526,7 @@
 				63C088CB1E5D2A8F00B72BD5 /* Assets.xcassets in Resources */,
 				63C088C91E5D2A8F00B72BD5 /* Main.storyboard in Resources */,
 				632855C41E5EF73100899B07 /* LICENSE in Resources */,
+				63E2B31D1E63CC5700C2D647 /* README in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -551,9 +565,11 @@
 				632855C51E5EF73100899B07 /* README.md in Sources */,
 				632855C91E5EF73100899B07 /* UIActivityIndicatorView+AFNetworking.m in Sources */,
 				63860FED1E6006F000C922B7 /* AlisRequestContext.m in Sources */,
+				63CEB5931E6507A20056966E /* WebViewJavascriptBridge_JS.m in Sources */,
 				632855C31E5EF73100899B07 /* AFURLSessionManager.m in Sources */,
 				632855911E5E8B4E00899B07 /* AlisRequestConfig.m in Sources */,
 				635683E71E5FCDC200A1C34B /* AFNetworkingPlugin.m in Sources */,
+				632C89221E62CE87005C5A52 /* AlisPluginManager.m in Sources */,
 				632855BF1E5EF73100899B07 /* AFNetworkReachabilityManager.m in Sources */,
 				63C088C61E5D2A8F00B72BD5 /* ViewController.m in Sources */,
 				63C089471E5D301500B72BD5 /* MKAnnotationView+WebCache.m in Sources */,
@@ -564,7 +580,7 @@
 				637E428C1E618362007EC5D3 /* VCService2.m in Sources */,
 				632855C61E5EF73100899B07 /* AFAutoPurgingImageCache.m in Sources */,
 				632855CC1E5EF73100899B07 /* UIProgressView+AFNetworking.m in Sources */,
-				63C0895F1E5D40AE00B72BD5 /* AlisPluginsManager.m in Sources */,
+				63C0895F1E5D40AE00B72BD5 /* AlisRequestManager.m in Sources */,
 				63C089591E5D30D400B72BD5 /* SDWebimagePlugin.m in Sources */,
 				63C089681E5D802B00B72BD5 /* VCService.m in Sources */,
 				63C088C31E5D2A8F00B72BD5 /* AppDelegate.m in Sources */,

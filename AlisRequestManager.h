@@ -1,5 +1,5 @@
 //
-//  AlisPluginsManager.h
+//  AlisRequestManager.h
 //  PluginsDemo
 //
 //  Created by alisports on 2017/2/22.
@@ -12,30 +12,24 @@
 #import "AlisRequestContext.h"
 #import <Foundation/Foundation.h>
 
-@interface AlisPluginsManager : NSObject
+@interface AlisRequestManager : NSObject
 
-+ (AlisPluginsManager *)manager;
++ (AlisRequestManager *)manager;
 
 //所有请求的数组，请求发出，加入数组；请求结束，取消从数组中删掉；请求暂停不删除
 @property(strong,nonatomic,nullable)NSMutableArray *requestArray;
 
 @property(strong,nonatomic,nullable)AlisRequestContext *requestContext;
 
-- (void)registerPlugin:(id<AlisPluginProtocol>)plugin key:(NSString *)key;
-
-//在plist文件中
-- (void)registerPlugin:(NSString *)key;
-
-- (void)registerALLPlugins;
-
-//- (id<AlisPluginProtocol>)plugin:(NSString *)key;
-
-
 - (void)startRequest:(AlisRequest *)request;
 - (void)startRequestModel:(id<AlisRequestProtocol>)requestModel;
 
 - (void)cancelRequest:(AlisRequest *)request;
+
+//注意：
+- (void)cancel_Request:( id<AlisRequestProtocol>)request;
 - (void)cancelRequestByIdentifier:(NSString *)requestIdentifier;
+- (void)cancelRequestwithServiceName:(NSString *)requestIdentifier;
 
 //设置请求的公有属性，server，head等
 @property(strong,nonatomic,nullable)AlisRequestConfig *config;
@@ -47,7 +41,7 @@
  - (void)startRequest:(AlisRequest *)request;
  - (void)startRequestModel:(id<AlisRequestProtocol>)requestModel;
 
- 所有AlisRequest的回调（成功）都在AlisPluginsManager中，再在AlisPluginsManager中向用户层发回调。
+ 所有AlisRequest的回调（成功）都在AlisRequestManager中，再在AlisRequestManager中向用户层发回调。
  
  */
 
