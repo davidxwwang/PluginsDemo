@@ -60,28 +60,33 @@
     [plugin perseRequest:request config:_config];
     //设置请求的MD5值。注：可以有其他方式
     request.identifier = [self md5WithString:request.url];
-    [self.requestArray addObject:request];
-
+    NSString *requestIdentifer = request.bindRequestModel.service.serviceName;
+    if (requestIdentifer) {
+        (self.requestSet)[requestIdentifer] = request;
+    }
+    else{
+        NSLog(@"warning: 请求资源的名称不能为空");
+    }
 }
 
 - (void)startRequestModel:(id<AlisRequestProtocol>)requestModel
 {
    // if (![self canRequest:requestModel]) return;
-    
     //request 请求的回调都在该类中
-//    AlisRequest *request = [[AlisRequest alloc]init];
-//    [self prepareRequest:request requestModel:requestModel];
-//    [self startRequest:request];
-//    request.bindRequestModel = requestModel.serviceName; //绑定业务层对应的requestModel
+    NSString *serviceAction = requestModel.service.serviceAction;
     
-    [self start_Request:^(AlisRequest *request) {
-        request.bindRequestModel = requestModel; //绑定业务层对应的requestModel
-        request.serviceName = requestModel.serviceName;
-        [self prepareRequest:request requestModel:requestModel];
-    }];
+    if ([serviceAction isEqualToString:@"resume"]) {
+        [self start_Request:^(AlisRequest *request) {
+            request.bindRequestModel = requestModel; //绑定业务层对应的requestModel
+            request.serviceName = requestModel.service.serviceName;
+            [self prepareRequest:request requestModel:requestModel];
+        }];
+    }
+    else if ([serviceAction isEqualToString:@"cancel"]){
+        [self cancelRequestByIdentifier:requestModel.service.serviceName];
+    
+    }
 }
-
-
 
 - (void)start_Request:(AlisRequestConfigBlock)requestConfigBlock{
     AlisRequest *request = [[AlisRequest alloc]init];
@@ -89,48 +94,39 @@
     [self startRequest:request];
 }
 
-
-
-- (NSMutableArray *)requestArray{
-    if (_requestArray == nil) {
-        _requestArray = [NSMutableArray array];
+- (NSMutableDictionary *)requestSet{
+    if (_requestSet == nil) {
+        _requestSet = [NSMutableDictionary dictionary];
     }
-    return _requestArray;
+    return _requestSet;
 }
 
 - (void)cancelRequest:(AlisRequest *)request{
     if (request == nil)  return;
     if(request.bindRequest){
         [request.bindRequest cancel];
-        [self.requestArray removeObject:request];
+        [self.requestSet removeObjectForKey:request.bindRequestModel.service.serviceName];
     }    
 }
 
-- (void)cancel_Request:(id<AlisRequestProtocol>)request{
-    __block AlisRequest *_request = nil;
-    [self.requestArray enumerateObjectsUsingBlock:^(AlisRequest *obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        if ([obj.bindRequestModel isEqual:request]) {
-            _request = obj.bindRequestModel;
-            *stop = YES;
-        }
-    }];
-    [self cancelRequest:_request];
-}
+//- (void)cancel_Request:(id<AlisRequestProtocol>)request{
+//    __block AlisRequest *_request = nil;
+//    [self.requestArray enumerateObjectsUsingBlock:^(AlisRequest *obj, NSUInteger idx, BOOL * _Nonnull stop) {
+//        if ([obj.bindRequestModel isEqual:request]) {
+//            _request = obj.bindRequestModel;
+//            *stop = YES;
+//        }
+//    }];
+//    [self cancelRequest:_request];
+//}
 
 - (void)cancelRequestByIdentifier:(NSString *)requestIdentifier{
-    AlisRequest *request = [self getRequestByIdentifer:requestIdentifier];
+    if (requestIdentifier == nil)  return;
+    AlisRequest *request = _requestSet[requestIdentifier];
     [self cancelRequest:request];
+
 }
 
-- (AlisRequest *)getRequestByIdentifer:(NSString *)requestIdentifier{
-    AlisRequest *_request = nil;
-    for (AlisRequest *request in self.requestArray) {
-        if (request.identifier == requestIdentifier) {
-            _request = request;
-        }
-    }
-    return _request;
-}
 #pragma mark ---
 //访问网络前的最后准备，准备好请求地址，头head，参数parameters，body，url，回调方法等等
 - (void)prepareRequest:(AlisRequest *)request requestModel:(id<AlisRequestProtocol>)requestModel{
@@ -230,7 +226,7 @@
     
    // [self clearBlocks:request];
     //请求成功，删除请求
-    [self.requestArray removeObject:request];
+    [self.requestSet removeObjectForKey:request.bindRequestModel.service.serviceName];
 }
 
 - (void)clearBlocks:(AlisRequest *)request{

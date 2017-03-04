@@ -11,6 +11,9 @@
 #import "AlisRequestConfig.h"
 #import "AlisRequestManager.h"
 
+#define resumeService(yy) ([self performSelector:NSSelectorFromString([@"resume_"  stringByAppendingFormat:@"%@", yy])])
+#define cancelService(yy) ([self performSelector:NSSelectorFromString([@"cancel_"  stringByAppendingFormat:@"%@", yy])])
+
 @implementation VCService2
 
 @synthesize candidateServices;
@@ -23,22 +26,21 @@
 }
 
 - (NSString *)api{
-    if([self.serviceName isEqualToString:@"AskName"]){
-        return @"/1442142801331138639111.mp4";
-    }else
-    {
-        return self.candidateServices[@"api"];
-    }
+    return @"/1442142801331138639111.mp4";
+//    if([self.serviceName isEqualToString:@"AskName"]){
+//        return @"/1442142801331138639111.mp4";
+//    }else
+//    {
+//        return self.candidateServices[@"api"];
+//    }
 }
 
 #pragma mark -- 服务区
 - (void)customAsk{
-    SEL serviceSEL = NSSelectorFromString(@"AskName");//AskName 是定义好的一种资源
-    [self performSelector:serviceSEL];
-    
-    sleep(3);
-    [[AlisRequestManager manager] cancel_Request:self];
-
+    resumeService(@"AskName");
+    sleep(1);
+    cancelService(@"AskName");
+   // [[AlisRequestManager manager] cancel_Request:self];
 }
 
 - (void)handlerServiceResponse:(AlisRequest *)request response:(AlisResponse *)response{

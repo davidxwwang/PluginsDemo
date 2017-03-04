@@ -8,6 +8,8 @@
 	<dict>
 		<key>uploadImageAliyun</key>
 		<dict>
+			<key>protocol</key>
+			<string>localData</string>
 			<key></key>
 			<string></string>
 		</dict>
@@ -17,6 +19,8 @@
 			<string>get</string>
 			<key>api</key>
 			<string>/1442142801331138639111.mp4</string>
+			<key>protocol</key>
+			<string>http</string>
 		</dict>
 	</dict>
 </dict>

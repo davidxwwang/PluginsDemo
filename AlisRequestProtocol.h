@@ -8,8 +8,9 @@
 
 #import <Foundation/Foundation.h>
 #import "AlisRequestConst.h"
+#import "service.h"
 
-@class AlisRequest,AlisResponse,AlisError;
+@class AlisRequest,AlisResponse,AlisError,service;
 
 typedef void(^AlisRequestFinishRequest) (AlisRequest *request ,AlisResponse *response ,AlisError *error);
 typedef void(^AlisRequestProgressRequest)(long long receivedSize, long long expectedSize);
@@ -23,8 +24,8 @@ typedef void(^AlisRequestProgressRequest)(long long receivedSize, long long expe
 - (NSDictionary *)requestParams;
 - (NSDictionary *)requestHead;
 
-//表示此时此刻 需要服务的名称，一个类中很可能有好几个不同值。使用“类名／服务名” 区别不同类中有相同的服务
-@property(copy,nonatomic)NSString *serviceName;
+//定义了一种服务
+@property(copy,nonatomic)service *service;
 
 //可以提供服务的项目
 @property(strong,nonatomic)NSDictionary *candidateServices;

@@ -16,8 +16,8 @@
 
 + (AlisRequestManager *)manager;
 
-//所有请求的数组，请求发出，加入数组；请求结束，取消从数组中删掉；请求暂停不删除
-@property(strong,nonatomic,nullable)NSMutableArray *requestArray;
+//所有请求的数组，元素为alirequest，请求发出，加入数组；请求结束，取消从数组中删掉；请求暂停不删除
+@property(strong,nonatomic,nullable)NSMutableDictionary *requestSet;
 
 @property(strong,nonatomic,nullable)AlisRequestContext *requestContext;
 
