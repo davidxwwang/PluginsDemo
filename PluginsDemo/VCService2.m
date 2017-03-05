@@ -13,6 +13,8 @@
 
 #define resumeService(yy) ([self performSelector:NSSelectorFromString([@"resume_"  stringByAppendingFormat:@"%@", yy])])
 #define cancelService(yy) ([self performSelector:NSSelectorFromString([@"cancel_"  stringByAppendingFormat:@"%@", yy])])
+#define suspendService(yy) ([self performSelector:NSSelectorFromString([@"suspend_"  stringByAppendingFormat:@"%@", yy])])
+#define ServiceIs(yy,xx) ([yy isEqualToString:xx])
 
 @implementation VCService2
 
@@ -21,18 +23,20 @@
 - (NSDictionary *)requestParams{
     return nil;
 }
+
 - (NSDictionary *)requestHead{
     return nil;
 }
 
 - (NSString *)api{
-    return @"/1442142801331138639111.mp4";
-//    if([self.serviceName isEqualToString:@"AskName"]){
-//        return @"/1442142801331138639111.mp4";
-//    }else
-//    {
-//        return self.candidateServices[@"api"];
-//    }
+    NSArray *array = [self.service.serviceName componentsSeparatedByString:@"_"];
+    NSString *localServiceName = array[1];
+    if( ServiceIs(localServiceName, @"AskName")){
+        return @"/1442142801331138639111.mp4";
+    }else
+    {
+        return self.candidateServices[@"api"];
+    }
 }
 
 #pragma mark -- 服务区
@@ -40,7 +44,6 @@
     resumeService(@"AskName");
     sleep(1);
     cancelService(@"AskName");
-   // [[AlisRequestManager manager] cancel_Request:self];
 }
 
 - (void)handlerServiceResponse:(AlisRequest *)request response:(AlisResponse *)response{

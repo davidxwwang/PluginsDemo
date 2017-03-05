@@ -45,7 +45,11 @@ void requestContainer(id self, SEL _cmd) {
     //之后的AlisRequest唯一绑定一个serviceName，表示请求为这个网络请求的service服务
     NSString *globalServiceName = [NSString stringWithFormat:@"%@_%@",NSStringFromClass([self class]),localServiceName];
     
-    ((id<AlisRequestProtocol>)self).service = [[service alloc]init:@"http" serviceName:globalServiceName serviceAction:serviceAction];
+    // 这个好像做成属性不太好，因为是实时变化的
+    NSDictionary* serviceType = requestServices[localServiceName];
+    ServiceType ser= [service convertServiceTypeFromString:serviceType[@"protocol"]];
+    ServiceAction action= [service convertServiceActionFromString:serviceAction];
+    ((id<AlisRequestProtocol>)self).service = [[service alloc]init:ser serviceName:globalServiceName serviceAction:action];
     
     //注意：globalServiceName 为该服务的唯一全局的识别码
     [[AlisRequestManager manager]startRequestModel:self];
@@ -60,7 +64,6 @@ void requestContainer(id self, SEL _cmd) {
 
 - (instancetype)init{
     if (self = [super init]) {
-       // [self fetchServices];
         fetchCandidateRequestServices();
         NSString *classString = NSStringFromClass([self class]);
         self.candidateServices = candidateRequestServices[classString];
@@ -89,8 +92,7 @@ void requestContainer(id self, SEL _cmd) {
     return nil;
 }
 
-+ (BOOL)resolveInstanceMethod:(SEL)sel
-{
++ (BOOL)resolveInstanceMethod:(SEL)sel{
     class_addMethod([self class], sel, (IMP)requestContainer, "@:");
     return YES;
 }
@@ -99,10 +101,21 @@ void requestContainer(id self, SEL _cmd) {
 }
 
 #pragma mark -- request parameters
-- (NSDictionary *)requestParams{
+- (NSData *)uploadData{
     return nil;
 }
 
+- (NSDictionary *)additionalInfo{
+    return nil;
+}
+
+- (NSString *)fileURL{
+    return nil;
+}
+
+- (NSDictionary *)requestParams{
+    return nil;
+}
 
 - (NSString *)api{
     NSDictionary *keys = self.candidateServices[((id<AlisRequestProtocol>)self).service.serviceName];
@@ -114,6 +127,10 @@ void requestContainer(id self, SEL _cmd) {
     NSDictionary *keys = self.candidateServices[((id<AlisRequestProtocol>)self).service.serviceName];
     NSString *httpMethod = keys[@"httpMethod"];
     return AlisRequestNormal;
+}
+
+- (AlisHTTPMethodType)httpMethod{
+    return AlisHTTPMethodGET;
 }
 
 @end

@@ -23,6 +23,7 @@ typedef void(^AlisRequestProgressRequest)(long long receivedSize, long long expe
 
 - (NSDictionary *)requestParams;
 - (NSDictionary *)requestHead;
+- (AlisHTTPMethodType)httpMethod;
 
 //定义了一种服务
 @property(copy,nonatomic)service *service;
@@ -35,7 +36,7 @@ typedef void(^AlisRequestProgressRequest)(long long receivedSize, long long expe
 @property(copy,nonatomic)AlisRequestProgressRequest businessLayer_requestProgressBlock;
 
 #pragma mark -- 上传文件情况使用
-//文件在沙盒里的位置
+//文件在沙盒里的位置,如果上传，就是源地址／如果下载任务，就是目的地址
 - (NSString *)fileURL;
 //上传情况下的data
 - (NSData *)uploadData;

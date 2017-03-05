@@ -19,6 +19,8 @@
 
 @property(strong,nonatomic)AlisPluginManager *pluginManager;
 
+@property(strong,nonatomic)dispatch_semaphore_t semaphore;
+
 @end
 
 @implementation AlisRequestManager
@@ -39,6 +41,8 @@
     if (self = [super init]) {
         self.requestContext = [AlisRequestContext shareContext];
         self.pluginManager = [AlisPluginManager manager];
+        _semaphore = dispatch_semaphore_create(0);
+
     }
     return self;
 }
@@ -73,18 +77,21 @@
 {
    // if (![self canRequest:requestModel]) return;
     //request 请求的回调都在该类中
-    NSString *serviceAction = requestModel.service.serviceAction;
-    
-    if ([serviceAction isEqualToString:@"resume"]) {
+    ServiceAction serviceAction = requestModel.service.serviceAction;
+    if (serviceAction == Resume) {
         [self start_Request:^(AlisRequest *request) {
             request.bindRequestModel = requestModel; //绑定业务层对应的requestModel
             request.serviceName = requestModel.service.serviceName;
             [self prepareRequest:request requestModel:requestModel];
+            //如果是同步请求
+            if (self.config.enableSync) {
+                dispatch_semaphore_wait(_semaphore, DISPATCH_TIME_FOREVER);
+            }
+            
         }];
     }
-    else if ([serviceAction isEqualToString:@"cancel"]){
+    else if (serviceAction == Cancel){
         [self cancelRequestByIdentifier:requestModel.service.serviceName];
-    
     }
 }
 
@@ -105,20 +112,13 @@
     if (request == nil)  return;
     if(request.bindRequest){
         [request.bindRequest cancel];
+        //sleep(2);
+        // [request.bindRequest resume];
+       //  [request.bindRequest suspend];
+        
         [self.requestSet removeObjectForKey:request.bindRequestModel.service.serviceName];
     }    
 }
-
-//- (void)cancel_Request:(id<AlisRequestProtocol>)request{
-//    __block AlisRequest *_request = nil;
-//    [self.requestArray enumerateObjectsUsingBlock:^(AlisRequest *obj, NSUInteger idx, BOOL * _Nonnull stop) {
-//        if ([obj.bindRequestModel isEqual:request]) {
-//            _request = obj.bindRequestModel;
-//            *stop = YES;
-//        }
-//    }];
-//    [self cancelRequest:_request];
-//}
 
 - (void)cancelRequestByIdentifier:(NSString *)requestIdentifier{
     if (requestIdentifier == nil)  return;
@@ -135,6 +135,10 @@
     
     if ([requestModel respondsToSelector:@selector(requestType)]) {
         request.requestType = [requestModel requestType];
+    }
+    
+    if ([requestModel respondsToSelector:@selector(httpMethod)]) {
+        request.httpMethod = [requestModel httpMethod];
     }
     
     NSString *urlString = nil;//[NSMutableString string];
@@ -175,9 +179,11 @@
     request.header = header;
     request.parameters = parameters;
     
-    
     //请求的回调
     request.finishBlock = ^(AlisRequest *request ,AlisResponse *response ,AlisError *error){
+        if(self.config.enableSync){
+            dispatch_semaphore_signal(_semaphore);
+        }
         //各个业务层的回调
         if (error) {
             [self failureWithError:error withRequest:request];
@@ -251,11 +257,10 @@
 }
 
 /**
- *  计算MD5.
- *
- *  @param string 原始字符串
- *
- *  @return MD5字符串
+ 计算MD5
+
+ @param string string description
+ @return return value description
  */
 - (NSString *)md5WithString:(NSString *)string {
      NSAssert(string, @"string should not nil");

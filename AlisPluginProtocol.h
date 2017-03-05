@@ -32,8 +32,6 @@
  *  @param request     请求（可能需要请求的一些参数来生成响应，如responseClass等）。
  *
  */
-- (void)perseRequest:(AlisRequest *)request;
-
 - (void)perseRequest:(AlisRequest *)request config:(AlisRequestConfig *)config;
 
 - (id)start_Request:(AlisRequest *)request config:(AlisRequestConfig *)config;

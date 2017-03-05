@@ -11,99 +11,124 @@
 #import "AlisRequest.h"
 #import "AlisRequestConfig.h"
 
+@interface AFNetworkingPlugin ()
+
+@property(strong,nonatomic) AFHTTPSessionManager *sessionManager;
+
+@end
+
 @implementation AFNetworkingPlugin
 
-- (void)perseRequest:(AlisRequest *)request config:(AlisRequestConfig *)config
-{
-    //    __weak typeof(self) weakSelf = self;
-    //    __weak typeof(request) weakRequest = request;
-    //    request.startBlock = ^(void){
-    //        [weakSelf startRequest:weakRequest config:config];
-    //    };
-    //
-    //    request.cancelBlock = ^(void){
-    //        [weakSelf cancelRequest:weakRequest];
-    //    };
+- (void)perseRequest:(AlisRequest *)request config:(AlisRequestConfig *)config{
     [self startRequest:request config:config];
+}
+
+- (void)uploadData:(AlisRequest *)request config:(AlisRequestConfig *)config{
+    __block NSError *serializationError = nil;
+    NSMutableURLRequest *urlRequest = [_sessionManager.requestSerializer multipartFormRequestWithMethod:@"POST" URLString:request.url parameters:request.parameters constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
+        [request.uploadFormDatas enumerateObjectsUsingBlock:^(AlisUpLoadFormData *obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            if (obj.fileData) {
+                [formData appendPartWithFormData:obj.fileData name:obj.name];
+            }else if (obj.fileURL)
+            {
+                NSError *fileError = nil;
+                [formData appendPartWithFileURL:obj.fileURL name:obj.fileName error:&fileError];
+                
+                if (fileError) {
+                    serializationError = fileError;
+                    *stop = YES;
+                }
+            }
+        }];
+        
+    } error:&serializationError];
+
+    NSURLSessionTask *task2 = [_sessionManager dataTaskWithRequest:urlRequest uploadProgress:^(NSProgress * _Nonnull uploadProgress) {
+    
+    } downloadProgress:^(NSProgress * _Nonnull downloadProgress) {
+        if (request.progressBlock) {
+            request.progressBlock(downloadProgress.completedUnitCount,downloadProgress.totalUnitCount);
+        }
+    } completionHandler:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
+        NSLog(@"finished"  );
+        if (request.finishBlock) {
+            AlisResponse *response = [self perseResponse:responseObject request:request];
+            AlisError *_error = [self perseError:error];
+            request.finishBlock(request,response,_error);
+    }}];
+
+    request.bindRequest = task2;
+    [task2 resume];
+
+}
+
+- (void)download:(AlisRequest *)request config:(AlisRequestConfig *)config{
+    NSString *httpMethod = [self httpMethodConverter:request.httpMethod];
+    NSAssert(httpMethod, @"httpMethod can not be nil");
+    
+    NSError *error = nil;
+    NSMutableURLRequest *__request = [_sessionManager.requestSerializer requestWithMethod:httpMethod URLString:request.url parameters:request.parameters error:&error];
+    __request.timeoutInterval = request.timeoutInterval;
+    __request.allHTTPHeaderFields = request.header;
+    
+    NSURLSessionDownloadTask *downloadtask = [_sessionManager downloadTaskWithRequest:__request progress:^(NSProgress * _Nonnull downloadProgress) {
+        
+    } destination:^NSURL * _Nonnull(NSURL * _Nonnull targetPath, NSURLResponse * _Nonnull response) {
+        return [NSURL URLWithString:@"xx"];
+        
+    } completionHandler:^(NSURLResponse * _Nonnull response, NSURL * _Nullable filePath, NSError * _Nullable error) {
+        
+    }];
+    
+    request.bindRequest = downloadtask;
+    [downloadtask resume];
     
 }
 
-- (void)startRequest:(AlisRequest *)request config:(AlisRequestConfig *)config
-{
-    //上传
-    if (request.requestType == AlisRequestUpload) {
-        AFHTTPSessionManager  *sessionManager = [[AFHTTPSessionManager alloc] initWithBaseURL:nil];
-        //request
-        sessionManager.requestSerializer.timeoutInterval = request.timeoutInterval;
-        sessionManager.requestSerializer.stringEncoding = NSUTF8StringEncoding;
-        //  sessionManager.requestSerializer.networkServiceType = urlRequest.networkServiceType;
-        //  sessionManager.requestSerializer.cachePolicy = urlRequest.cachePolicy;
-        NSDictionary *headerInfo = request.header;
-        if ([headerInfo count] > 0) {
-            for (NSString *key in [headerInfo allKeys]) {
-                NSString *value = [headerInfo objectForKey:key];
-                if (value && [value isKindOfClass:[NSString class]]) {
-                    [sessionManager.requestSerializer setValue:value forHTTPHeaderField:key];
-                }
-            }
-        }
-
-        __block NSError *serializationError = nil;
-        NSMutableURLRequest *urlRequest = [sessionManager.requestSerializer multipartFormRequestWithMethod:@"POST" URLString:request.url parameters:request.parameters constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
-            [request.uploadFormDatas enumerateObjectsUsingBlock:^(AlisUpLoadFormData *obj, NSUInteger idx, BOOL * _Nonnull stop) {
-                if (obj.fileData) {
-                    [formData appendPartWithFormData:obj.fileData name:obj.name];
-                }else if (obj.fileURL)
-                {
-                    NSError *fileError = nil;
-                    [formData appendPartWithFileURL:obj.fileURL name:obj.fileName error:&fileError];
-                    
-                    if (fileError) {
-                        serializationError = fileError;
-                        *stop = YES;
-                    }
-                }                
-            }];
-            
-        } error:&serializationError];
-        
-//        if (serializationError) {
-//            if (completionHandler) {
-//                dispatch_async(xm_request_completion_callback_queue(), ^{
-//                    completionHandler(nil, serializationError);
-//                });
-//            }
-//            return;
-//        }
-//        
-//        [self xm_processURLRequest:urlRequest byXMRequest:request];
-        
-//        NSURLSessionUploadTask *uploadTask = nil;
-//        __weak __typeof(self)weakSelf = self;
-//        uploadTask = [sessionManager
-//                      uploadTaskWithStreamedRequest:urlRequest
-//                                            progress:request.progressBlock
-//                                   completionHandler:^(NSURLResponse *response, id responseObject, NSError *error) {
-//                                    __strong __typeof(weakSelf)strongSelf = weakSelf;
-//        
-//                                       [strongSelf xm_processResponse:response
-//                                                                             object:responseObject
-//                                                                              error:error
-//                                                                            request:request
-//                                                                  completionHandler:completionHandler];
-//                                                 }];
-//        [uploadTask resume];
-
-       
+- (void)normalRequest:(AlisRequest *)request config:(AlisRequestConfig *)config{
+    NSString *httpMethod = [self httpMethodConverter:request.httpMethod];
+    NSAssert(httpMethod, @"httpMethod can not be nil");
+    
+    NSError *error = nil;
+    NSMutableURLRequest *__request = [_sessionManager.requestSerializer requestWithMethod:httpMethod URLString:request.url parameters:request.parameters error:&error];
+    __request.timeoutInterval = request.timeoutInterval;
+    __request.allHTTPHeaderFields = request.header;
+    
+    if (error && request.finishBlock) {
+        AlisError *_error = [self perseError:error];
+        request.finishBlock(request,nil,_error);
     }
     
+    NSURLSessionTask *task = [_sessionManager dataTaskWithRequest:__request uploadProgress:^(NSProgress * _Nonnull uploadProgress) {
+        
+    } downloadProgress:^(NSProgress * _Nonnull downloadProgress) {
+        if (request.progressBlock) {
+            request.progressBlock(downloadProgress.completedUnitCount,downloadProgress.totalUnitCount);
+        }
+    } completionHandler:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
+        NSLog(@"finished"  );
+        if (request.finishBlock) {
+            AlisResponse *response = [self perseResponse:responseObject request:request];
+            AlisError *_error = [self perseError:error];
+            request.finishBlock(request,response,_error);
+        }
+        
+    }];
     
+    request.bindRequest = task;
+    [task resume];
+
+}
+
+- (void)initSessionManager:(AlisRequest *)request{
     AFHTTPSessionManager  *sessionManager = [[AFHTTPSessionManager alloc] initWithBaseURL:nil];
-    //request
     sessionManager.requestSerializer.timeoutInterval = request.timeoutInterval;
     sessionManager.requestSerializer.stringEncoding = NSUTF8StringEncoding;
-  //  sessionManager.requestSerializer.networkServiceType = urlRequest.networkServiceType;
-  //  sessionManager.requestSerializer.cachePolicy = urlRequest.cachePolicy;
+    
+    //response
+    sessionManager.responseSerializer.acceptableContentTypes = [NSSet setWithObjects:@"application/json", @"text/json", @"text/javascript", @"text/xml", @"text/html", @"text/plain",@"video/mp4",nil];
+    [(AFJSONResponseSerializer *)sessionManager.responseSerializer setRemovesKeysWithNullValues:YES];
+
     NSDictionary *headerInfo = request.header;
     if ([headerInfo count] > 0) {
         for (NSString *key in [headerInfo allKeys]) {
@@ -114,51 +139,20 @@
         }
     }
     
-    NSError *error = nil;
-    NSMutableURLRequest *__request = [sessionManager.requestSerializer requestWithMethod:@"GET" URLString:request.url parameters:request.parameters error:&error];
-    if (error ) {
-        if (request.finishBlock) {
-         //   AlisResponse *response = [self perseResponse:image request:request];
-            AlisError *_error = [self perseError:error];
-            request.finishBlock(request,nil,_error);
-        }
+   self.sessionManager = sessionManager;
+}
+
+- (void)startRequest:(AlisRequest *)request config:(AlisRequestConfig *)config
+{
+    [self initSessionManager:request];
+    //上传任务 下载任务 一般任务
+    if (request.requestType == AlisRequestUpload) {
+        [self uploadData:request config:config];
+    }else if (request.requestType == AlisRequestDownload) {
+        [self download:request config:config];
+    }else if (request.requestType == AlisRequestNormal) {
+        [self normalRequest:request config:config];
     }
-    __request.timeoutInterval = request.timeoutInterval;
-//    __request.networkServiceType = urlRequest.networkServiceType;
-//    __request.cachePolicy = urlRequest.cachePolicy;
-    __request.allHTTPHeaderFields = request.header;
-    //response
-    sessionManager.responseSerializer.acceptableContentTypes = [NSSet setWithObjects:@"application/json", @"text/json", @"text/javascript", @"text/xml", @"text/html", @"text/plain",@"video/mp4",nil];
-    [(AFJSONResponseSerializer *)sessionManager.responseSerializer setRemovesKeysWithNullValues:YES];
-    //task
-    NSURLSessionTask *task = [sessionManager dataTaskWithRequest:__request completionHandler:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
-                if (request.finishBlock) {
-                    AlisResponse *response = [self perseResponse:responseObject request:request];
-                    AlisError *_error = [self perseError:error];
-                    request.finishBlock(request,response,_error);
-                }    }];
-    
-    NSURLSessionTask *task2 = [sessionManager dataTaskWithRequest:__request uploadProgress:^(NSProgress * _Nonnull uploadProgress) {
-        
-    } downloadProgress:^(NSProgress * _Nonnull downloadProgress) {
-        if (request.progressBlock) {
-            request.progressBlock(downloadProgress.completedUnitCount,downloadProgress.totalUnitCount);
-        }
-        //NSLog(@"%@ down load %f",task2,  progress  );
-    } completionHandler:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
-         NSLog(@"finished"  );
-        if (request.finishBlock) {
-            AlisResponse *response = [self perseResponse:responseObject request:request];
-            AlisError *_error = [self perseError:error];
-            request.finishBlock(request,response,_error);
-        }
-    
-    }];
-
-
-    request.bindRequest = task2;
-    [task2 resume];
-
 }
 
 - (AlisResponse *)perseResponse:(id)rawResponse request:(AlisRequest *)request
@@ -182,6 +176,27 @@
     _error.name = ((NSError *)rawError).domain;
     _error.userInfo = ((NSError *)rawError).userInfo;
     return _error;
+}
+
+#pragma mark -- help
+- (NSString *)httpMethodConverter:(AlisHTTPMethodType)HTTPMethodType{
+    if (HTTPMethodType == AlisHTTPMethodGET) {
+        return @"GET";
+    }else if (HTTPMethodType == AlisHTTPMethodPOST) {
+        return @"POST";
+    }else if (HTTPMethodType == AlisHTTPMethodGET) {
+        return @"GET";
+    }else if (HTTPMethodType == AlisHTTPMethodHEAD) {
+        return @"HEAD";
+    }else if (HTTPMethodType == AlisHTTPMethodDELETE) {
+        return @"DELETE";
+    }else if (HTTPMethodType == AlisHTTPMethodPUT) {
+        return @"PUT";
+    }else if (HTTPMethodType == AlisHTTPMethodPATCH) {
+        return @"PATCH";
+    }
+    
+    return nil;
 }
 
 @end

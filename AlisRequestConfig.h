@@ -22,6 +22,8 @@
 //回调的queue
 @property(strong,nonatomic,nullable)dispatch_queue_t callBackQueue;
 
+//是否同步请求，默认为NO
+@property(assign,nonatomic)BOOL enableSync;
 
 @end
 

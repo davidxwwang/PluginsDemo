@@ -10,7 +10,7 @@
 
 @implementation service
 
-- (instancetype)init:(NSString *)serviceType serviceName:(NSString *)serviceName serviceAction:(NSString *)serviceAction{
+- (instancetype)init:(ServiceType)serviceType serviceName:(NSString *)serviceName serviceAction:(ServiceAction)serviceAction{
     if (self = [super init]) {
         _serviceType = serviceType;
         _serviceName = serviceName;
@@ -18,6 +18,23 @@
     }
     return self;
 }
+
++ (ServiceType)convertServiceTypeFromString:(NSString *)yy{
+    if ([yy isEqualToString:@"http"] || [yy isEqualToString:@"https"]) {
+        return HTTP;
+    }
+    return HTTP;
+}
++ (ServiceAction)convertServiceActionFromString:(NSString *)yy{
+    if ([yy isEqualToString:@"resume"]) {
+        return Resume;
+    }else if ([yy isEqualToString:@"cancel"]) {
+        return Cancel;
+    }
+    
+    return Resume;
+}
+
 
 - (instancetype)copyWithZone:(NSZone *)zone{
     service *copy = [[[self class] allocWithZone:zone] init:_serviceType serviceName:_serviceName serviceAction:_serviceAction];
