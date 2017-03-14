@@ -10,7 +10,7 @@
 #import "AlisRequestProtocol.h"
 #import "AlisRequestConst.h"
 
-@class AlisRequest,AlisResponse,AlisError;
+@class AlisRequest,AlisResponse,AlisError,AlisUpLoadFormData;
 
 
 typedef void(^AlisRequestStartRequest) (void);
@@ -80,7 +80,7 @@ typedef void(^AlisRequestProgressRequest)(long long receivedSize, long long expe
 - (void)addFormDataWithName:(NSString *)name fileData:(NSData *)fileData;
 - (void)addFormDataWithName:(NSString *)name fileURL:(NSString *)fileURL;
 
-@property(strong,nonatomic)NSMutableArray *uploadFormDatas;
+@property(strong,nonatomic)NSMutableArray<AlisUpLoadFormData *> *uploadFormDatas;
 
 @end
 

@@ -121,86 +121,6 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "PluginsDemo/VCService.m"
-            timestampString = "510394111.091961"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "75"
-            endingLineNumber = "75"
-            landmarkName = "-init"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "AlisRequestManager.m"
-            timestampString = "510381190.406238"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "105"
-            endingLineNumber = "105"
-            landmarkName = "-cancelRequest:"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "PluginsDemo/AFNetworkingPlugin.m"
-            timestampString = "510387817.006305"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "90"
-            endingLineNumber = "90"
-            landmarkName = "-normalRequest:config:"
-            landmarkType = "7">
-            <Locations>
-               <Location
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "-[AFNetworkingPlugin normalRequest:config:]"
-                  moduleName = "PluginsDemo"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/david/Desktop/FrameWorkDavid/PluginsDemo/PluginsDemo/AFNetworkingPlugin.m"
-                  timestampString = "510394112.173257"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "90"
-                  endingLineNumber = "90"
-                  offsetFromSymbolStart = "149">
-               </Location>
-               <Location
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "-[AFNetworkingPlugin normalRequest:config:]"
-                  moduleName = "PluginsDemo"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/david/Desktop/FrameWorkDavid/PluginsDemo/PluginsDemo/AFNetworkingPlugin.m"
-                  timestampString = "510394112.176299"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "90"
-                  endingLineNumber = "90"
-                  offsetFromSymbolStart = "167">
-               </Location>
-            </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
             filePath = "PluginsDemo/AFNetworkingPlugin.m"
             timestampString = "510389250.560478"
             startingColumnNumber = "9223372036854775807"
@@ -218,7 +138,7 @@
                   moduleName = "PluginsDemo"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/david/Desktop/FrameWorkDavid/PluginsDemo/PluginsDemo/AFNetworkingPlugin.m"
-                  timestampString = "510394112.181299"
+                  timestampString = "511174652.455833"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "76"
@@ -233,7 +153,7 @@
                   moduleName = "PluginsDemo"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/david/Desktop/FrameWorkDavid/PluginsDemo/PluginsDemo/AFNetworkingPlugin.m"
-                  timestampString = "510394112.183553"
+                  timestampString = "511174652.458117"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "77"
@@ -265,13 +185,13 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "AlisRequestManager.m"
-            timestampString = "510389962.973157"
+            filePath = "PluginsDemo/VCService2.m"
+            timestampString = "511174651.380185"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "77"
-            endingLineNumber = "77"
-            landmarkName = "-startRequestModel:"
+            startingLineNumber = "79"
+            endingLineNumber = "79"
+            landmarkName = "-handlerServiceResponse:serviceName:response:"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -281,13 +201,29 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "AlisRequestManager.m"
-            timestampString = "510394124.742512"
+            filePath = "PluginsDemo/VCService.m"
+            timestampString = "511172635.633569"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "85"
-            endingLineNumber = "85"
-            landmarkName = "-startRequestModel:"
+            startingLineNumber = "42"
+            endingLineNumber = "42"
+            landmarkName = "requestContainer()"
+            landmarkType = "9">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "PluginsDemo/VCService.m"
+            timestampString = "511173423.742692"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "75"
+            endingLineNumber = "75"
+            landmarkName = "-init"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -297,13 +233,13 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "AlisRequestManager.m"
-            timestampString = "510394139.63063"
+            filePath = "PluginsDemo/VCService.m"
+            timestampString = "511173423.742692"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "116"
-            endingLineNumber = "116"
-            landmarkName = "-cancelRequestByIdentifier:"
+            startingLineNumber = "125"
+            endingLineNumber = "125"
+            landmarkName = "-api"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

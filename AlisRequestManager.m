@@ -64,7 +64,7 @@
     [plugin perseRequest:request config:_config];
     //设置请求的MD5值。注：可以有其他方式
     request.identifier = [self md5WithString:request.url];
-    NSString *requestIdentifer = request.bindRequestModel.service.serviceName;
+    NSString *requestIdentifer = request.bindRequestModel.currentService.serviceName;
     if (requestIdentifer) {
         (self.requestSet)[requestIdentifer] = request;
     }
@@ -73,15 +73,14 @@
     }
 }
 
-- (void)startRequestModel:(id<AlisRequestProtocol>)requestModel
-{
+- (void)startRequestModel:(id<AlisRequestProtocol>)requestModel{
    // if (![self canRequest:requestModel]) return;
     //request 请求的回调都在该类中
-    ServiceAction serviceAction = requestModel.service.serviceAction;
+    ServiceAction serviceAction = requestModel.currentService.serviceAction;
     if (serviceAction == Resume) {
         [self start_Request:^(AlisRequest *request) {
             request.bindRequestModel = requestModel; //绑定业务层对应的requestModel
-            request.serviceName = requestModel.service.serviceName;
+            request.serviceName = requestModel.currentService.serviceName;
             [self prepareRequest:request requestModel:requestModel];
             //如果是同步请求
             if (self.config.enableSync) {
@@ -91,7 +90,7 @@
         }];
     }
     else if (serviceAction == Cancel){
-        [self cancelRequestByIdentifier:requestModel.service.serviceName];
+        [self cancelRequestByIdentifier:requestModel.currentService.serviceName];
     }
 }
 
@@ -116,7 +115,7 @@
         // [request.bindRequest resume];
        //  [request.bindRequest suspend];
         
-        [self.requestSet removeObjectForKey:request.bindRequestModel.service.serviceName];
+        [self.requestSet removeObjectForKey:request.bindRequestModel.currentService.serviceName];
     }    
 }
 
@@ -225,14 +224,14 @@
         dispatch_async(self.config.callBackQueue, ^{
             weakRequest.bindRequestModel.businessLayer_requestFinishBlock(request,response,nil);
         });
-    } else
-    {
+    } 
+    else{
         weakRequest.bindRequestModel.businessLayer_requestFinishBlock(request,response,nil);
     }
     
    // [self clearBlocks:request];
     //请求成功，删除请求
-    [self.requestSet removeObjectForKey:request.bindRequestModel.service.serviceName];
+    [self.requestSet removeObjectForKey:request.bindRequestModel.currentService.serviceName];
 }
 
 - (void)clearBlocks:(AlisRequest *)request{

@@ -22,17 +22,15 @@ static NSString *testApi = @"/1442142801331138639111.mp4";
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-      // NSString * cc = NSStringFromClass(typeof(self)) ;
-    // Do any additional setup after loading the view, typically from a nib.
     
     [[AlisRequestManager manager] setupConfig:^(AlisRequestConfig *config) {
         config.generalServer = testServer;
         config.callBackQueue = dispatch_queue_create("david", DISPATCH_QUEUE_CONCURRENT);
+        config.enableSync = NO;
        // config.generalHeader = @{@"xx":@"yy"};
         
     }];
     [[AlisPluginManager manager]registerALLPlugins];
-    
     VCService2 *service2 = [[VCService2 alloc]init];
     [service2 customAsk];
     

@@ -11,4 +11,5 @@
 @interface VCService2 : VCService
 
 - (void)customAsk;
+- (void)uploadFile;
 @end

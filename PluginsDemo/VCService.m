@@ -11,7 +11,6 @@
 //   （2）取消对资源的操作（资源目前的状态是操作过程中，例如：大文件的下载，上传）
 //   （3）暂停对资源的操作
 //
-//
 #import <objc/runtime.h>
 #import "VCService.h"
 #import "AlisRequestManager.h"
@@ -47,20 +46,23 @@ void requestContainer(id self, SEL _cmd) {
     
     // 这个好像做成属性不太好，因为是实时变化的
     NSDictionary* serviceType = requestServices[localServiceName];
-    ServiceType ser= [service convertServiceTypeFromString:serviceType[@"protocol"]];
-    ServiceAction action= [service convertServiceActionFromString:serviceAction];
-    ((id<AlisRequestProtocol>)self).service = [[service alloc]init:ser serviceName:globalServiceName serviceAction:action];
+    ServiceType ser= [Service convertServiceTypeFromString:serviceType[@"protocol"]];
+    ServiceAction action= [Service convertServiceActionFromString:serviceAction];
+    
+    ((id<AlisRequestProtocol>)self).currentService = [[Service alloc]init:ser serviceName:globalServiceName serviceAction:action];
+    ((VCService *)self).currentServiceName = localServiceName;
     
     //注意：globalServiceName 为该服务的唯一全局的识别码
     [[AlisRequestManager manager]startRequestModel:self];
 }
 
 @interface VCService ()
+
 @end
 
 @implementation VCService
 
-@synthesize service,candidateServices,businessLayer_requestFinishBlock,businessLayer_requestProgressBlock;
+@synthesize currentService,candidateServices,businessLayer_requestFinishBlock,businessLayer_requestProgressBlock;
 
 - (instancetype)init{
     if (self = [super init]) {
@@ -75,7 +77,7 @@ void requestContainer(id self, SEL _cmd) {
                 NSLog(@"失败了:原因->");
             }else
             {
-                [weakSelf handlerServiceResponse:request response:response];
+                [weakSelf handlerServiceResponse:request serviceName:[weakSelf toLocalServiceName:request.serviceName] response:response];
             }
         };
         
@@ -97,7 +99,7 @@ void requestContainer(id self, SEL _cmd) {
     return YES;
 }
 
-- (void)handlerServiceResponse:(AlisRequest *)request response:(AlisResponse *)response{
+- (void)handlerServiceResponse:(AlisRequest *)request serviceName:(NSString *)serviceName response:(AlisResponse *)response{
 }
 
 #pragma mark -- request parameters
@@ -118,19 +120,41 @@ void requestContainer(id self, SEL _cmd) {
 }
 
 - (NSString *)api{
-    NSDictionary *keys = self.candidateServices[((id<AlisRequestProtocol>)self).service.serviceName];
+    NSDictionary *keys = self.candidateServices[_currentServiceName];
     NSString *api = keys[@"api"];
     return api;
 }
 
 - (AlisRequestType)requestType{
-    NSDictionary *keys = self.candidateServices[((id<AlisRequestProtocol>)self).service.serviceName];
+    NSDictionary *keys = self.candidateServices[_currentServiceName];
     NSString *httpMethod = keys[@"httpMethod"];
+    
     return AlisRequestNormal;
 }
 
 - (AlisHTTPMethodType)httpMethod{
+    NSDictionary *keys = self.candidateServices[_currentServiceName];
+    NSString *httpMethod = keys[@"httpMethod"];
+    //if (httpMethod) return httpMethod;
+    
     return AlisHTTPMethodGET;
+}
+
+#pragma mark -- help
+    
+/**
+ 全局serviceName变为local的serviceName 
+ @param globalServiceName 全局serviceName
+ @return local的serviceName
+ */
+- (NSString *)toLocalServiceName:(NSString *)globalServiceName{
+
+    if (globalServiceName == nil) return nil;
+    NSArray *serviceArray = [globalServiceName componentsSeparatedByString:@"_"];
+    if (serviceArray.count == 2) {
+        return serviceArray[1];
+    }
+    return nil;
 }
 
 @end

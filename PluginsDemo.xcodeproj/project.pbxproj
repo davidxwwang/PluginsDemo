@@ -27,10 +27,11 @@
 		632855CE1E5EF73100899B07 /* UIWebView+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = 632855BD1E5EF73100899B07 /* UIWebView+AFNetworking.m */; };
 		632C89221E62CE87005C5A52 /* AlisPluginManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 632C89211E62CE87005C5A52 /* AlisPluginManager.m */; };
 		635683E71E5FCDC200A1C34B /* AFNetworkingPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = 635683E61E5FCDC200A1C34B /* AFNetworkingPlugin.m */; };
+		637CB1041E77BD7500001902 /* CookieManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 637CB1031E77BD7500001902 /* CookieManager.m */; };
 		637E428C1E618362007EC5D3 /* VCService2.m in Sources */ = {isa = PBXBuildFile; fileRef = 637E428B1E618362007EC5D3 /* VCService2.m */; };
 		63860FED1E6006F000C922B7 /* AlisRequestContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 63860FEC1E6006F000C922B7 /* AlisRequestContext.m */; };
 		63A134951E604F090025E575 /* RequestConfig.plist in Resources */ = {isa = PBXBuildFile; fileRef = 63A134941E604F090025E575 /* RequestConfig.plist */; };
-		63ABE37C1E6AA1C500B1EC1F /* service.m in Sources */ = {isa = PBXBuildFile; fileRef = 63ABE37B1E6AA1C500B1EC1F /* service.m */; };
+		63ABE37C1E6AA1C500B1EC1F /* Service.m in Sources */ = {isa = PBXBuildFile; fileRef = 63ABE37B1E6AA1C500B1EC1F /* Service.m */; };
 		63C088C01E5D2A8F00B72BD5 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 63C088BF1E5D2A8F00B72BD5 /* main.m */; };
 		63C088C31E5D2A8F00B72BD5 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 63C088C21E5D2A8F00B72BD5 /* AppDelegate.m */; };
 		63C088C61E5D2A8F00B72BD5 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 63C088C51E5D2A8F00B72BD5 /* ViewController.m */; };
@@ -124,13 +125,15 @@
 		632C89211E62CE87005C5A52 /* AlisPluginManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AlisPluginManager.m; sourceTree = "<group>"; };
 		635683E51E5FCDC200A1C34B /* AFNetworkingPlugin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFNetworkingPlugin.h; sourceTree = "<group>"; };
 		635683E61E5FCDC200A1C34B /* AFNetworkingPlugin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFNetworkingPlugin.m; sourceTree = "<group>"; };
+		637CB1021E77BD7500001902 /* CookieManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CookieManager.h; sourceTree = "<group>"; };
+		637CB1031E77BD7500001902 /* CookieManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CookieManager.m; sourceTree = "<group>"; };
 		637E428A1E618362007EC5D3 /* VCService2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VCService2.h; sourceTree = "<group>"; };
 		637E428B1E618362007EC5D3 /* VCService2.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VCService2.m; sourceTree = "<group>"; };
 		63860FEB1E6006F000C922B7 /* AlisRequestContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AlisRequestContext.h; sourceTree = "<group>"; };
 		63860FEC1E6006F000C922B7 /* AlisRequestContext.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AlisRequestContext.m; sourceTree = "<group>"; };
 		63A134941E604F090025E575 /* RequestConfig.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = RequestConfig.plist; sourceTree = "<group>"; };
-		63ABE37A1E6AA1C500B1EC1F /* service.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = service.h; sourceTree = "<group>"; };
-		63ABE37B1E6AA1C500B1EC1F /* service.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = service.m; sourceTree = "<group>"; };
+		63ABE37A1E6AA1C500B1EC1F /* Service.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Service.h; sourceTree = "<group>"; };
+		63ABE37B1E6AA1C500B1EC1F /* Service.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Service.m; sourceTree = "<group>"; };
 		63C088BB1E5D2A8F00B72BD5 /* PluginsDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PluginsDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		63C088BF1E5D2A8F00B72BD5 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		63C088C11E5D2A8F00B72BD5 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -279,9 +282,19 @@
 			path = "UIKit+AFNetworking";
 			sourceTree = "<group>";
 		};
+		637CB0FF1E77BD1E00001902 /* ToolUtils */ = {
+			isa = PBXGroup;
+			children = (
+				637CB1021E77BD7500001902 /* CookieManager.h */,
+				637CB1031E77BD7500001902 /* CookieManager.m */,
+			);
+			name = ToolUtils;
+			sourceTree = "<group>";
+		};
 		63C088B21E5D2A8F00B72BD5 = {
 			isa = PBXGroup;
 			children = (
+				637CB0FF1E77BD1E00001902 /* ToolUtils */,
 				63CEB5911E6507A20056966E /* WebViewJavascriptBridge_JS.h */,
 				63CEB5921E6507A20056966E /* WebViewJavascriptBridge_JS.m */,
 				632855981E5EF73100899B07 /* AFNetworking */,
@@ -373,8 +386,8 @@
 				63860FEB1E6006F000C922B7 /* AlisRequestContext.h */,
 				63860FEC1E6006F000C922B7 /* AlisRequestContext.m */,
 				63E2B31C1E63CC5700C2D647 /* README */,
-				63ABE37A1E6AA1C500B1EC1F /* service.h */,
-				63ABE37B1E6AA1C500B1EC1F /* service.m */,
+				63ABE37A1E6AA1C500B1EC1F /* Service.h */,
+				63ABE37B1E6AA1C500B1EC1F /* Service.m */,
 			);
 			name = Plugins;
 			sourceTree = "<group>";
@@ -594,6 +607,7 @@
 				632855BE1E5EF73100899B07 /* AFHTTPSessionManager.m in Sources */,
 				63C0894F1E5D301500B72BD5 /* SDWebImagePrefetcher.m in Sources */,
 				63C089551E5D301500B72BD5 /* UIImageView+WebCache.m in Sources */,
+				637CB1041E77BD7500001902 /* CookieManager.m in Sources */,
 				63C0894A1E5D301500B72BD5 /* SDWebImageCompat.m in Sources */,
 				632855C11E5EF73100899B07 /* AFURLRequestSerialization.m in Sources */,
 				632855C71E5EF73100899B07 /* AFImageDownloader.m in Sources */,
@@ -601,7 +615,7 @@
 				63C089511E5D301500B72BD5 /* UIImage+GIF.m in Sources */,
 				63C088C01E5D2A8F00B72BD5 /* main.m in Sources */,
 				632855CD1E5EF73100899B07 /* UIRefreshControl+AFNetworking.m in Sources */,
-				63ABE37C1E6AA1C500B1EC1F /* service.m in Sources */,
+				63ABE37C1E6AA1C500B1EC1F /* Service.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

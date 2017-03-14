@@ -11,45 +11,75 @@
 #import "AlisRequestConfig.h"
 #import "AlisRequestManager.h"
 
-#define resumeService(yy) ([self performSelector:NSSelectorFromString([@"resume_"  stringByAppendingFormat:@"%@", yy])])
-#define cancelService(yy) ([self performSelector:NSSelectorFromString([@"cancel_"  stringByAppendingFormat:@"%@", yy])])
-#define suspendService(yy) ([self performSelector:NSSelectorFromString([@"suspend_"  stringByAppendingFormat:@"%@", yy])])
-#define ServiceIs(yy,xx) ([yy isEqualToString:xx])
-
 @implementation VCService2
 
 @synthesize candidateServices;
 
 - (NSDictionary *)requestParams{
+    if (ServiceIs(self.currentServiceName, @"AskName")) {
+        return nil;
+    }else if (ServiceIs(self.currentServiceName, @"uploadAliyun")) {
+        return nil;
+    }
     return nil;
 }
 
 - (NSDictionary *)requestHead{
+    if (ServiceIs(self.currentServiceName, @"AskName")) {
+        return nil;
+    }else if (ServiceIs(self.currentServiceName, @"uploadAliyun")) {
+        return nil;
+    }
     return nil;
 }
 
-- (NSString *)api{
-    NSArray *array = [self.service.serviceName componentsSeparatedByString:@"_"];
-    NSString *localServiceName = array[1];
-    if( ServiceIs(localServiceName, @"AskName")){
-        return @"/1442142801331138639111.mp4";
-    }else
-    {
-        return self.candidateServices[@"api"];
+- (NSString *)fileURL{
+    if (ServiceIs(self.currentServiceName, @"AskName")) {
+        return nil;
+    }else if (ServiceIs(self.currentServiceName, @"uploadAliyun")) {
+        return nil;
     }
+    return nil;
+}
+    //上传情况下的data
+- (NSData *)uploadData{
+    if (ServiceIs(self.currentServiceName, @"AskName")) {
+        return nil;
+    }else if (ServiceIs(self.currentServiceName, @"uploadAliyun")) {
+        return nil;
+    }
+    return nil;
+}
+    
+- (NSDictionary *)additionalInfo{
+    if (ServiceIs(self.currentServiceName, @"AskName")) {
+        return nil;
+    }else if (ServiceIs(self.currentServiceName, @"uploadAliyun")) {
+        return nil;
+    }
+    return nil;
 }
 
 #pragma mark -- 服务区
 - (void)customAsk{
     resumeService(@"AskName");
     sleep(1);
-    cancelService(@"AskName");
+    //cancelService(@"AskName");
+}
+    
+- (void)uploadFile{
+    resumeService(@"uploadAliyun");
 }
 
-- (void)handlerServiceResponse:(AlisRequest *)request response:(AlisResponse *)response{
+- (void)handlerServiceResponse:(AlisRequest *)request serviceName:(NSString *)serviceName response:(AlisResponse *)response{
+    if (serviceName == nil) return;
+    
     NSLog(@"结果已经成功返回给了业务层了");
     //根据请求服务的不同，做对应的处理。
-    if([request.serviceName isEqualToString:@"AskName"]){
+    if(ServiceIs(serviceName, @"AskName")){
+        //
+    }else if(ServiceIs(serviceName, @"uploadAliyun")){
+        //
     }
 }
 

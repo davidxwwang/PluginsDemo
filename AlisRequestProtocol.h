@@ -22,11 +22,17 @@ typedef void(^AlisRequestProgressRequest)(long long receivedSize, long long expe
 - (NSString *)api;
 
 - (NSDictionary *)requestParams;
+    
+/**
+ 设置HTTP的head，比如认证，cookie等
+ @return 返回字典
+ */
 - (NSDictionary *)requestHead;
+    
 - (AlisHTTPMethodType)httpMethod;
 
 //定义了一种服务
-@property(copy,nonatomic)service *service;
+@property(copy,nonatomic)Service *currentService;
 
 //可以提供服务的项目
 @property(strong,nonatomic)NSDictionary *candidateServices;
@@ -34,6 +40,8 @@ typedef void(^AlisRequestProgressRequest)(long long receivedSize, long long expe
 //或者可以改为代理
 @property(copy,nonatomic)AlisRequestFinishRequest businessLayer_requestFinishBlock;
 @property(copy,nonatomic)AlisRequestProgressRequest businessLayer_requestProgressBlock;
+
+    
 
 #pragma mark -- 上传文件情况使用
 //文件在沙盒里的位置,如果上传，就是源地址／如果下载任务，就是目的地址

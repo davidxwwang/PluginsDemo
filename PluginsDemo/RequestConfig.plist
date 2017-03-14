@@ -6,21 +6,23 @@
 	<dict/>
 	<key>VCService2</key>
 	<dict>
-		<key>uploadImageAliyun</key>
+		<key>uploadAliyun</key>
 		<dict>
+			<key>httpMethod</key>
+			<string>POST</string>
 			<key>protocol</key>
-			<string>localData</string>
-			<key></key>
-			<string></string>
+			<string>http</string>
+			<key>api</key>
+			<string>/save</string>
 		</dict>
 		<key>AskName</key>
 		<dict>
 			<key>httpMethod</key>
 			<string>get</string>
-			<key>api</key>
-			<string>/1442142801331138639111.mp4</string>
 			<key>protocol</key>
 			<string>http</string>
+			<key>api</key>
+			<string>/1442142801331138639111.mp4</string>
 		</dict>
 	</dict>
 </dict>
