@@ -1,4 +1,14 @@
 //
+//  AlisServiceProxy.m
+//  PluginsDemo
+//
+//  Created by alisports on 2017/3/21.
+//  Copyright © 2017年 alisports. All rights reserved.
+//
+
+#import "AlisServiceProxy.h"
+
+//
 //  VCService.m
 //  PluginsDemo
 //
@@ -18,7 +28,7 @@
 
 static NSDictionary *candidateRequestServices;
 
-void fetchCandidateRequestServices()
+void fetchCandidateRequestServices1()
 {
     if (candidateRequestServices != nil) return;
     NSString *plistPath = @"/Users/david/Desktop/FrameWorkDavid/PluginsDemo/PluginsDemo/RequestConfig.plist";
@@ -29,8 +39,11 @@ void fetchCandidateRequestServices()
     candidateRequestServices = [NSDictionary dictionaryWithDictionary:availableRequestServices];
 }
 
-void requestContainer(id self, SEL _cmd) {
-   
+void requestContainer1(id self, SEL _cmd) {
+    NSString *classString = NSStringFromClass([self class]);
+    ((id<AlisRequestProtocol>)self).candidateServices = candidateRequestServices[classString];
+    
+
     NSDictionary *requestServices = ((id<AlisRequestProtocol>)self).candidateServices;
     
     NSArray *serviceArray = [NSStringFromSelector(_cmd) componentsSeparatedByString:@"_"];
@@ -45,7 +58,7 @@ void requestContainer(id self, SEL _cmd) {
         
     }
     else{
-         if (![[requestServices allKeys] containsObject:localServiceName]) return;
+        if (![[requestServices allKeys] containsObject:localServiceName]) return;
     }
     
     //之后的AlisRequest唯一绑定一个serviceName，表示请求为这个网络请求的service服务
@@ -63,24 +76,23 @@ void requestContainer(id self, SEL _cmd) {
     [[AlisRequestManager manager]startRequestModel:self];
 }
 
-@interface VCService ()
-
+@interface AlisServiceProxy ()
 /**
  委托者
  */
-@property(strong,nonatomic)NSMutableArray *agents;
+@property(strong,nonatomic)NSMutableDictionary *serviceAgents;
 
 @end
 
-@implementation VCService
+@implementation AlisServiceProxy
 
 @synthesize currentService,candidateServices,businessLayer_requestFinishBlock,businessLayer_requestProgressBlock;
 
-+ (VCService *)shareManager{
-    static VCService *_manager = nil;
++ (AlisServiceProxy *)shareManager{
+    static AlisServiceProxy *_manager = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        _manager = [[VCService alloc]init];
+        _manager = [[AlisServiceProxy alloc]init];
         
     });
     return _manager;
@@ -88,11 +100,10 @@ void requestContainer(id self, SEL _cmd) {
 
 - (instancetype)init{
     if (self = [super init]) {
-        fetchCandidateRequestServices();
-        self.agents = [NSMutableArray array];
+        fetchCandidateRequestServices1();
+        self.serviceAgents = [NSMutableDictionary dictionary];
 //        NSString *classString = NSStringFromClass([self class]);
 //        self.candidateServices = candidateRequestServices[classString];
-
         __weak typeof (self) weakSelf = self;
         self.businessLayer_requestFinishBlock = ^(AlisRequest *request ,AlisResponse *response ,AlisError *error){
             NSLog(@"在业务层完成了请求成功的回调");
@@ -114,8 +125,15 @@ void requestContainer(id self, SEL _cmd) {
 }
 
 + (BOOL)resolveInstanceMethod:(SEL)sel{
-    class_addMethod([self class], sel, (IMP)requestContainer, "@:");
-    return YES;
+    NSString *selString = NSStringFromSelector(sel);
+    if ([selString containsString:@"resume_"]) {
+        class_addMethod([self class], sel, (IMP)requestContainer1, "@:");
+        return YES;
+    }
+    else{
+        return NO;//[super resolveInstanceMethod:sel];
+    }
+    return NO;//[super resolveInstanceMethod:sel];
 }
 
 - (void)handlerServiceResponse:(AlisRequest *)request serviceName:(NSString *)serviceName response:(AlisResponse *)response{
@@ -134,15 +152,15 @@ void requestContainer(id self, SEL _cmd) {
     return nil;
 }
 
-- (NSDictionary *)requestParams{
-    return nil;
-}
+//- (NSDictionary *)requestParams{
+//    return nil;
+//}
 
-- (NSString *)api{
-    NSDictionary *keys = self.candidateServices[_currentServiceName];
-    NSString *api = keys[@"api"];
-    return api;
-}
+//- (NSString *)api{
+//    NSDictionary *keys = self.candidateServices[_currentServiceName];
+//    NSString *api = keys[@"api"];
+//    return api;
+//}
 
 - (AlisRequestType)requestType{
     NSDictionary *keys = self.candidateServices[_currentServiceName];
@@ -160,14 +178,14 @@ void requestContainer(id self, SEL _cmd) {
 }
 
 #pragma mark -- help
-    
+
 /**
  全局serviceName变为local的serviceName 
  @param globalServiceName 全局serviceName
  @return local的serviceName
  */
 - (NSString *)toLocalServiceName:(NSString *)globalServiceName{
-
+    
     if (globalServiceName == nil) return nil;
     NSArray *serviceArray = [globalServiceName componentsSeparatedByString:@"_"];
     if (serviceArray.count == 2) {
@@ -179,28 +197,42 @@ void requestContainer(id self, SEL _cmd) {
 - (void)injectService:(id<AlisRequestProtocol>)object{
     NSParameterAssert(object);
     NSAssert([object conformsToProtocol:@protocol(AlisRequestProtocol)], @"'object' 需要服从协议");
-    [_agents addObject:object];
+    
+    NSString *classString = NSStringFromClass([object class]);
+    _serviceAgents[classString] = object;
 }
 
 #pragma mark --
+//- (id)forwardingTargetForSelector:(SEL)aSelector
+//{
+//    return nil;
+//}
+
 - (NSMethodSignature *)methodSignatureForSelector:(SEL)sel{
-    for (id object in self.agents) {
-        if ([object respondsToSelector:sel]) {
-            return [object methodSignatureForSelector:sel];
-        }
-    }
+//    NSString *selString = NSStringFromSelector(sel);
+//    if ([selString containsString:@"resume_"]) {
+//        class_addMethod([self class], sel, (IMP)requestContainer1, "@:");
+//        
+//    }
+//
+//    for (id object in self.agents) {
+//        if ([object respondsToSelector:sel]) {
+//            return [object methodSignatureForSelector:sel];
+//        }
+//    }
     return [super methodSignatureForSelector:sel];
 }
 
 - (void)forwardInvocation:(NSInvocation *)invocation{
-    for (id object in self.agents) {
-        if ([object respondsToSelector:invocation.selector]) {
-            [invocation invokeWithTarget:object];
-            return;
-        }
-    }
+//    for (id object in self.agents) {
+//        if ([object respondsToSelector:invocation.selector]) {
+//            [invocation invokeWithTarget:object];
+//            return;
+//        }
+//    }
     [super forwardInvocation:invocation];
 }
 
 
 @end
+

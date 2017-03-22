@@ -14,6 +14,7 @@
 
 @interface AlisRequestManager : NSObject
 
++ (AlisRequestManager *)sharedManager;
 + (AlisRequestManager *)manager;
 
 //所有请求的数组，元素为alirequest，请求发出，加入数组；请求结束，取消从数组中删掉；请求暂停不删除
@@ -46,4 +47,31 @@
  */
 
 
+- (void)sendChainRequest:
+    (AlisChainRConfigBlock)chainRequestConfigBlock
+                 success:(AlisChainRSucessBlock)success
+                 failure:(AlisChainRFailBlock)failure
+                  finish:(AlisChainRFinishedBlock)finish;
+    
 @end
+
+
+#pragma mark - XMChainRequest
+
+
+/**
+ V1版 把所有结果都返回，不要管太多
+ */
+@interface AlisChainRequestmanager : NSObject
+    
+@property (nonatomic, copy, readonly) NSString *identifier;
+@property (nonatomic, strong, readonly) AlisRequest *runningRequest;
+    
+- (AlisChainRequestmanager *)onFirst:(AlisRequestConfigBlock)firstBlock;
+- (AlisChainRequestmanager *)onNext:(AlisChainNextRBlock)nextBlock;
+    
+- (BOOL)onFinishedOneRequest:(AlisRequest *)request response:(nullable id)responseObject error:(nullable NSError *)error;
+    
+@end
+
+

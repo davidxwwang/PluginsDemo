@@ -47,9 +47,10 @@
 //    NSURL *url = [NSURL URLWithString:urlString];
     
     //第三方的请求发起
-    request.bindRequest = [[SDWebImageManager sharedManager] downloadImageWithURL:request.url options:SDWebImageContinueInBackground progress:^(NSInteger receivedSize, NSInteger expectedSize) {
+    NSURL *requestURL = [NSURL URLWithString:request.url];
+    request.bindRequest = [[SDWebImageManager sharedManager] downloadImageWithURL:requestURL options:SDWebImageContinueInBackground progress:^(NSInteger receivedSize, NSInteger expectedSize) {
         if (request.progressBlock) {
-            request.progressBlock(receivedSize,expectedSize);
+            request.progressBlock(request,receivedSize,expectedSize);
         }
 
     } completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {

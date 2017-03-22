@@ -11,6 +11,7 @@
 #import "VCService.h"
 #import "VCService2.h"
 
+#import "AlisServiceProxy.h"
 
 static NSString *testServer = @"http://baobab.wdjcdn.com";
 static NSString *testApi = @"/1442142801331138639111.mp4";
@@ -23,25 +24,34 @@ static NSString *testApi = @"/1442142801331138639111.mp4";
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    [[AlisRequestManager manager] setupConfig:^(AlisRequestConfig *config) {
+    [[AlisRequestManager sharedManager] setupConfig:^(AlisRequestConfig *config) {
         config.generalServer = testServer;
         config.callBackQueue = dispatch_queue_create("david", DISPATCH_QUEUE_CONCURRENT);
         config.enableSync = NO;
        // config.generalHeader = @{@"xx":@"yy"};
         
     }];
+    
     [[AlisPluginManager manager]registerALLPlugins];
     VCService2 *service2 = [[VCService2 alloc]init];
     [service2 customAsk];
     
-        
+//    [[AlisRequestManager sharedManager]sendChainRequest:^( AlisChainRequestmanager *manager){
+//        [[manager onFirst:^(AlisRequest *request) {
+//            
+//        }] onNext:^(AlisRequest *request, id  _Nullable responseObject, NSError *error) {
+//            //上一次的请求结果，在responseObject中
+//        }];
+//        
+//    } success:^(NSArray *responseArray) {
+//        
+//    } failure:^(id data) {
+//        
+//    } finish:^(id data) {
+//        
+//    }]; 
+    [[AlisServiceProxy shareManager] injectService:self];
+    resumeService1(@"ddss");
 }
-
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
 
 @end

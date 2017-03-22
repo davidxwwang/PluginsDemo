@@ -47,7 +47,7 @@
     
     } downloadProgress:^(NSProgress * _Nonnull downloadProgress) {
         if (request.progressBlock) {
-            request.progressBlock(downloadProgress.completedUnitCount,downloadProgress.totalUnitCount);
+            request.progressBlock(request,downloadProgress.completedUnitCount,downloadProgress.totalUnitCount);
         }
     } completionHandler:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
         NSLog(@"finished"  );
@@ -103,7 +103,7 @@
         
     } downloadProgress:^(NSProgress * _Nonnull downloadProgress) {
         if (request.progressBlock) {
-            request.progressBlock(downloadProgress.completedUnitCount,downloadProgress.totalUnitCount);
+            request.progressBlock(request,downloadProgress.completedUnitCount,downloadProgress.totalUnitCount);
         }
     } completionHandler:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
         NSLog(@"finished"  );

@@ -16,9 +16,11 @@
 typedef void(^AlisRequestStartRequest) (void);
 typedef void(^AlisRequestCancelRequest) (void);
 typedef void(^AlisRequestFinishRequest) (AlisRequest *request ,AlisResponse *response ,AlisError *error);
-typedef void(^AlisRequestProgressRequest)(long long receivedSize, long long expectedSize);
+typedef void(^AlisRequestProgressRequest)(AlisRequest *request ,long long receivedSize, long long expectedSize);
 
 @interface AlisRequest : NSObject
+
++ (AlisRequest *)request;
 
 //请求所处的环境，先假定为发出请求的类，也可以新增属性：例如->网络环境，电量，内存状况等。
 @property(strong,nonatomic) NSString *context;

@@ -41,7 +41,8 @@
     }
     return nil;
 }
-    //上传情况下的data
+
+//上传情况下的data
 - (NSData *)uploadData{
     if (ServiceIs(self.currentServiceName, @"AskName")) {
         return nil;
@@ -76,6 +77,14 @@
     
     NSLog(@"结果已经成功返回给了业务层了");
     //根据请求服务的不同，做对应的处理。
+    if(ServiceIs(serviceName, @"AskName")){
+        //
+    }else if(ServiceIs(serviceName, @"uploadAliyun")){
+        //
+    }
+}
+    
+- (void)handlerServiceResponse:(AlisRequest *)request serviceName:(NSString *)serviceName progress:(float)progress{
     if(ServiceIs(serviceName, @"AskName")){
         //
     }else if(ServiceIs(serviceName, @"uploadAliyun")){

@@ -10,6 +10,12 @@
 
 @implementation AlisRequest
 
+
++ (AlisRequest *)request{
+    return [[[self class]alloc] init];
+
+}
+
 - (instancetype)init
 {
     if (self = [super init]) {

@@ -15,7 +15,7 @@
 @protocol AlisPluginProtocol <NSObject>
 
 /**
- *  定义可以提供的服务，例如 图片下载，一般的下载， 同步下载等。方便manager判断
+ *  定义可以提供的服务，例如 本地缓存,图片下载，一般的下载， 同步下载等。方便manager判断
  */
 - (NSArray *)supportSevervice;
 

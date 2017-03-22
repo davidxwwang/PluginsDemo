@@ -40,7 +40,7 @@ typedef NS_ENUM(NSInteger, ServiceType) {
 @property(assign,nonatomic,readonly)ServiceType serviceType;
 
 /**
- 服务的行为，例如resume开始，cancel取消等
+ 服务的行为，例如resume开始，cancel取消,增加，删除等
  */
 @property(assign,nonatomic,readonly)ServiceAction serviceAction;
 

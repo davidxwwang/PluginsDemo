@@ -26,6 +26,7 @@
 		632855CD1E5EF73100899B07 /* UIRefreshControl+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = 632855BB1E5EF73100899B07 /* UIRefreshControl+AFNetworking.m */; };
 		632855CE1E5EF73100899B07 /* UIWebView+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = 632855BD1E5EF73100899B07 /* UIWebView+AFNetworking.m */; };
 		632C89221E62CE87005C5A52 /* AlisPluginManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 632C89211E62CE87005C5A52 /* AlisPluginManager.m */; };
+		633088581E7F9FE300F26448 /* UIViewController+aspect.m in Sources */ = {isa = PBXBuildFile; fileRef = 633088571E7F9FE300F26448 /* UIViewController+aspect.m */; };
 		635683E71E5FCDC200A1C34B /* AFNetworkingPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = 635683E61E5FCDC200A1C34B /* AFNetworkingPlugin.m */; };
 		637CB1041E77BD7500001902 /* CookieManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 637CB1031E77BD7500001902 /* CookieManager.m */; };
 		637E428C1E618362007EC5D3 /* VCService2.m in Sources */ = {isa = PBXBuildFile; fileRef = 637E428B1E618362007EC5D3 /* VCService2.m */; };
@@ -63,6 +64,7 @@
 		63C089681E5D802B00B72BD5 /* VCService.m in Sources */ = {isa = PBXBuildFile; fileRef = 63C089671E5D802B00B72BD5 /* VCService.m */; };
 		63CEB5931E6507A20056966E /* WebViewJavascriptBridge_JS.m in Sources */ = {isa = PBXBuildFile; fileRef = 63CEB5921E6507A20056966E /* WebViewJavascriptBridge_JS.m */; };
 		63E2B31D1E63CC5700C2D647 /* README in Resources */ = {isa = PBXBuildFile; fileRef = 63E2B31C1E63CC5700C2D647 /* README */; };
+		63E4218C1E81290300387F64 /* AlisServiceProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 63E4218B1E81290300387F64 /* AlisServiceProxy.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -123,6 +125,8 @@
 		632855BD1E5EF73100899B07 /* UIWebView+AFNetworking.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIWebView+AFNetworking.m"; sourceTree = "<group>"; };
 		632C89201E62CE87005C5A52 /* AlisPluginManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AlisPluginManager.h; sourceTree = "<group>"; };
 		632C89211E62CE87005C5A52 /* AlisPluginManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AlisPluginManager.m; sourceTree = "<group>"; };
+		633088561E7F9FE300F26448 /* UIViewController+aspect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIViewController+aspect.h"; sourceTree = "<group>"; };
+		633088571E7F9FE300F26448 /* UIViewController+aspect.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+aspect.m"; sourceTree = "<group>"; };
 		635683E51E5FCDC200A1C34B /* AFNetworkingPlugin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFNetworkingPlugin.h; sourceTree = "<group>"; };
 		635683E61E5FCDC200A1C34B /* AFNetworkingPlugin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFNetworkingPlugin.m; sourceTree = "<group>"; };
 		637CB1021E77BD7500001902 /* CookieManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CookieManager.h; sourceTree = "<group>"; };
@@ -197,6 +201,8 @@
 		63CEB5911E6507A20056966E /* WebViewJavascriptBridge_JS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebViewJavascriptBridge_JS.h; sourceTree = "<group>"; };
 		63CEB5921E6507A20056966E /* WebViewJavascriptBridge_JS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebViewJavascriptBridge_JS.m; sourceTree = "<group>"; };
 		63E2B31C1E63CC5700C2D647 /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
+		63E4218A1E81290300387F64 /* AlisServiceProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AlisServiceProxy.h; sourceTree = "<group>"; };
+		63E4218B1E81290300387F64 /* AlisServiceProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AlisServiceProxy.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -294,6 +300,8 @@
 		63C088B21E5D2A8F00B72BD5 = {
 			isa = PBXGroup;
 			children = (
+				63E4218A1E81290300387F64 /* AlisServiceProxy.h */,
+				63E4218B1E81290300387F64 /* AlisServiceProxy.m */,
 				637CB0FF1E77BD1E00001902 /* ToolUtils */,
 				63CEB5911E6507A20056966E /* WebViewJavascriptBridge_JS.h */,
 				63CEB5921E6507A20056966E /* WebViewJavascriptBridge_JS.m */,
@@ -324,6 +332,8 @@
 				63C088C21E5D2A8F00B72BD5 /* AppDelegate.m */,
 				63C088C41E5D2A8F00B72BD5 /* ViewController.h */,
 				63C088C51E5D2A8F00B72BD5 /* ViewController.m */,
+				633088561E7F9FE300F26448 /* UIViewController+aspect.h */,
+				633088571E7F9FE300F26448 /* UIViewController+aspect.m */,
 				63C088C71E5D2A8F00B72BD5 /* Main.storyboard */,
 				63C088CA1E5D2A8F00B72BD5 /* Assets.xcassets */,
 				63C088CC1E5D2A8F00B72BD5 /* LaunchScreen.storyboard */,
@@ -571,6 +581,7 @@
 			files = (
 				63C089541E5D301500B72BD5 /* UIImageView+HighlightedWebCache.m in Sources */,
 				632855CB1E5EF73100899B07 /* UIImageView+AFNetworking.m in Sources */,
+				63E4218C1E81290300387F64 /* AlisServiceProxy.m in Sources */,
 				63C089481E5D301500B72BD5 /* NSData+ImageContentType.m in Sources */,
 				63C0894E1E5D301500B72BD5 /* SDWebImageManager.m in Sources */,
 				63C0894C1E5D301500B72BD5 /* SDWebImageDownloader.m in Sources */,
@@ -581,6 +592,7 @@
 				63C089491E5D301500B72BD5 /* SDImageCache.m in Sources */,
 				632855CA1E5EF73100899B07 /* UIButton+AFNetworking.m in Sources */,
 				632855C51E5EF73100899B07 /* README.md in Sources */,
+				633088581E7F9FE300F26448 /* UIViewController+aspect.m in Sources */,
 				632855C91E5EF73100899B07 /* UIActivityIndicatorView+AFNetworking.m in Sources */,
 				63860FED1E6006F000C922B7 /* AlisRequestContext.m in Sources */,
 				63CEB5931E6507A20056966E /* WebViewJavascriptBridge_JS.m in Sources */,

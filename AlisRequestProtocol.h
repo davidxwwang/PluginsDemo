@@ -13,7 +13,7 @@
 @class AlisRequest,AlisResponse,AlisError,service;
 
 typedef void(^AlisRequestFinishRequest) (AlisRequest *request ,AlisResponse *response ,AlisError *error);
-typedef void(^AlisRequestProgressRequest)(long long receivedSize, long long expectedSize);
+typedef void(^AlisRequestProgressRequest)(AlisRequest *request ,long long receivedSize, long long expectedSize);
 
 @protocol AlisRequestProtocol <NSObject>
 
@@ -52,8 +52,14 @@ typedef void(^AlisRequestProgressRequest)(long long receivedSize, long long expe
 - (NSDictionary *)additionalInfo;
 
 //处理访问资源后的结果
-- (void)handlerServiceResponse:(AlisRequest *)request  response:(AlisResponse *)response;
+- (void)handlerServiceResponse:(AlisRequest *)request  serviceName:(NSString *)serviceName  response:(AlisResponse *)response;
 
+/**
+ 访问资源的程度，一般是http 上传下载
 
+ @param request 网络请求
+ @param progress 程度，百分比
+ */
+- (void)handlerServiceResponse:(AlisRequest *)request  serviceName:(NSString *)serviceName progress:(float)progress;
 
 @end

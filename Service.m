@@ -25,6 +25,7 @@
     }
     return HTTP;
 }
+    
 + (ServiceAction)convertServiceActionFromString:(NSString *)yy{
     if ([yy isEqualToString:@"resume"]) {
         return Resume;
