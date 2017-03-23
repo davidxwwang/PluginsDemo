@@ -8,9 +8,8 @@
 
 #import <Foundation/Foundation.h>
 #import "AlisRequestConst.h"
-#import "service.h"
 
-@class AlisRequest,AlisResponse,AlisError,service;
+@class AlisRequest,AlisResponse,AlisError,Service;
 
 typedef void(^AlisRequestFinishRequest) (AlisRequest *request ,AlisResponse *response ,AlisError *error);
 typedef void(^AlisRequestProgressRequest)(AlisRequest *request ,long long receivedSize, long long expectedSize);
@@ -20,15 +19,16 @@ typedef void(^AlisRequestProgressRequest)(AlisRequest *request ,long long receiv
 - (AlisRequestType)requestType;
 //相对路径
 - (NSString *)api;
+- (NSString *)server;
 
 - (NSDictionary *)requestParams;
-    
+
 /**
  设置HTTP的head，比如认证，cookie等
  @return 返回字典
  */
 - (NSDictionary *)requestHead;
-    
+
 - (AlisHTTPMethodType)httpMethod;
 
 //定义了一种服务
@@ -41,7 +41,7 @@ typedef void(^AlisRequestProgressRequest)(AlisRequest *request ,long long receiv
 @property(copy,nonatomic)AlisRequestFinishRequest businessLayer_requestFinishBlock;
 @property(copy,nonatomic)AlisRequestProgressRequest businessLayer_requestProgressBlock;
 
-    
+
 
 #pragma mark -- 上传文件情况使用
 //文件在沙盒里的位置,如果上传，就是源地址／如果下载任务，就是目的地址
@@ -56,10 +56,18 @@ typedef void(^AlisRequestProgressRequest)(AlisRequest *request ,long long receiv
 
 /**
  访问资源的程度，一般是http 上传下载
-
+ 
  @param request 网络请求
  @param progress 程度，百分比
  */
 - (void)handlerServiceResponse:(AlisRequest *)request  serviceName:(NSString *)serviceName progress:(float)progress;
+
+/**
+ 访问资源的程度，一般是http 上传下载
+ 
+ @param request 网络请求
+ @param progress 程度，百分比
+ */
+- (void)handlerServiceResponse:(AlisRequest *)request  serviceName:(NSString *)serviceName error:(AlisError *)error;
 
 @end

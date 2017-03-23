@@ -4,8 +4,24 @@
 <dict>
 	<key>ViewController</key>
 	<dict>
-		<key>ddss</key>
-		<string>ddss</string>
+		<key>AskDemo</key>
+		<dict>
+			<key>httpMethod</key>
+			<string>get</string>
+			<key>protocol</key>
+			<string>HTTP</string>
+			<key>New item</key>
+			<string></string>
+		</dict>
+		<key>AskName</key>
+		<dict>
+			<key>httpMethod</key>
+			<string>GET</string>
+			<key>protocol</key>
+			<string>HTTP</string>
+			<key>api</key>
+			<string>/1442142801331138639111.mp4</string>
+		</dict>
 	</dict>
 	<key>VCService3</key>
 	<dict/>

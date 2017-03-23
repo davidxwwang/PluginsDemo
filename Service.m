@@ -10,11 +10,12 @@
 
 @implementation Service
 
-- (instancetype)init:(ServiceType)serviceType serviceName:(NSString *)serviceName serviceAction:(ServiceAction)serviceAction{
+- (instancetype)init:(ServiceType)serviceType serviceName:(NSString *)serviceName serviceAction:(ServiceAction)serviceAction serviceAgent:(id)serviceAgent{
     if (self = [super init]) {
         _serviceType = serviceType;
         _serviceName = serviceName;
         _serviceAction = serviceAction;
+        _serviceAgent = serviceAgent;
     }
     return self;
 }
@@ -25,7 +26,7 @@
     }
     return HTTP;
 }
-    
+
 + (ServiceAction)convertServiceActionFromString:(NSString *)yy{
     if ([yy isEqualToString:@"resume"]) {
         return Resume;
@@ -38,9 +39,9 @@
 
 
 - (instancetype)copyWithZone:(NSZone *)zone{
-    Service *copy = [[[self class] allocWithZone:zone] init:_serviceType serviceName:_serviceName serviceAction:_serviceAction];
+    Service *copy = [[[self class] allocWithZone:zone] init:_serviceType serviceName:_serviceName serviceAction:_serviceAction serviceAgent:_serviceAgent] ;
     return copy;
-
+    
 }
 
 

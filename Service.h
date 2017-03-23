@@ -5,8 +5,9 @@
 //  Created by alisports on 2017/3/4.
 //  Copyright © 2017年 alisports. All rights reserved.
 //
-
+#import "AlisRequestProtocol.h"
 #import <Foundation/Foundation.h>
+
 typedef NS_ENUM(NSInteger, ServiceAction) {
     Resume,
     Cancel
@@ -27,7 +28,7 @@ typedef NS_ENUM(NSInteger, ServiceType) {
 + (ServiceType)convertServiceTypeFromString:(NSString *)yy;
 + (ServiceAction)convertServiceActionFromString:(NSString *)yy;
 
-- (instancetype)init:(ServiceType)serviceType serviceName:(NSString *)serviceName serviceAction:(ServiceAction)serviceAction;
+- (instancetype)init:(ServiceType)serviceType serviceName:(NSString *)serviceName serviceAction:(ServiceAction)serviceAction serviceAgent:(id)serviceAgent;
 
 /**
  服务的名称
@@ -43,6 +44,11 @@ typedef NS_ENUM(NSInteger, ServiceType) {
  服务的行为，例如resume开始，cancel取消,增加，删除等
  */
 @property(assign,nonatomic,readonly)ServiceAction serviceAction;
+
+/**
+ 服务的类
+ */
+@property(strong,nonatomic,readonly)id serviceAgent;
 
 
 

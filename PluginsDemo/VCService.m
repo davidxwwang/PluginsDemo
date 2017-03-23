@@ -56,8 +56,8 @@ void requestContainer(id self, SEL _cmd) {
     ServiceType ser= [Service convertServiceTypeFromString:serviceType[@"protocol"]];
     ServiceAction action= [Service convertServiceActionFromString:serviceAction];
     
-    ((id<AlisRequestProtocol>)self).currentService = [[Service alloc]init:ser serviceName:globalServiceName serviceAction:action];
-    ((VCService *)self).currentServiceName = localServiceName;
+//    ((id<AlisRequestProtocol>)self).currentService = [[Service alloc]init:ser serviceName:globalServiceName serviceAction:action];
+//    ((VCService *)self).currentServiceName = localServiceName;
     
     //注意：globalServiceName 为该服务的唯一全局的识别码
     [[AlisRequestManager manager]startRequestModel:self];

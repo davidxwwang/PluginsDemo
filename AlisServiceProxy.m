@@ -26,6 +26,7 @@
 #import "AlisRequestManager.h"
 #import "service.h"
 
+//APP中所有的请求服务都保存在该字典中
 static NSDictionary *candidateRequestServices;
 
 void fetchCandidateRequestServices1()
@@ -40,11 +41,24 @@ void fetchCandidateRequestServices1()
 }
 
 void requestContainer1(id self, SEL _cmd) {
-    NSString *classString = NSStringFromClass([self class]);
-    ((id<AlisRequestProtocol>)self).candidateServices = candidateRequestServices[classString];
+    //当前服务的类
+    id<AlisRequestProtocol> currentServiceAgent = nil;    
     
-
-    NSDictionary *requestServices = ((id<AlisRequestProtocol>)self).candidateServices;
+    if ([self isKindOfClass:[AlisServiceProxy class]]) {
+        currentServiceAgent = ((AlisServiceProxy *)self).currentServiceAgent;
+        if (currentServiceAgent == nil) {
+            NSLog(@"服务的类不存在，请检查");
+            return;
+        }
+    }
+    
+    NSString *currentServiceAgentString = NSStringFromClass([currentServiceAgent class]);
+    NSDictionary *agentRequestServices = candidateRequestServices[currentServiceAgentString];
+    if (agentRequestServices == nil) {
+        NSLog(@"plist 中没有为 配置请求服务");
+        return;
+    }
+    // NSDictionary *requestServices = ((id<AlisRequestProtocol>)self).candidateServices;
     
     NSArray *serviceArray = [NSStringFromSelector(_cmd) componentsSeparatedByString:@"_"];
     if(serviceArray.count < 2) return;
@@ -54,26 +68,24 @@ void requestContainer1(id self, SEL _cmd) {
     
     //如果该类的服务项目不包括该项服务,就终止请求
     //消息转发过来,如果requestServices = nil，从注册的地方在查找
-    if (requestServices == nil) {
-        
-    }
-    else{
-        if (![[requestServices allKeys] containsObject:localServiceName]) return;
-    }
+    if (![[agentRequestServices allKeys] containsObject:localServiceName]){
+        NSLog(@"在plist中没有为该服务配置对应的数据");
+        return;
+    } 
     
-    //之后的AlisRequest唯一绑定一个serviceName，表示请求为这个网络请求的service服务
-    NSString *globalServiceName = [NSString stringWithFormat:@"%@_%@",NSStringFromClass([self class]),localServiceName];
+    //之后的AlisRequest唯一绑定一个serviceName，表示请求为这个网络请求的service服务 
+    //注意：globalServiceName 为该服务的唯一全局的识别码
+    NSString *globalServiceName = [NSString stringWithFormat:@"%@_%@",NSStringFromClass([currentServiceAgent class]),localServiceName];
     
     // 这个好像做成属性不太好，因为是实时变化的
-    NSDictionary* serviceType = requestServices[localServiceName];
+    NSDictionary* serviceType = agentRequestServices[localServiceName];
     ServiceType ser= [Service convertServiceTypeFromString:serviceType[@"protocol"]];
     ServiceAction action= [Service convertServiceActionFromString:serviceAction];
     
-    ((id<AlisRequestProtocol>)self).currentService = [[Service alloc]init:ser serviceName:globalServiceName serviceAction:action];
-    ((VCService *)self).currentServiceName = localServiceName;
+    ((id<AlisRequestProtocol>)self).currentService = [[Service alloc]init:ser serviceName:globalServiceName serviceAction:action serviceAgent:currentServiceAgent];
     
-    //注意：globalServiceName 为该服务的唯一全局的识别码
-    [[AlisRequestManager manager]startRequestModel:self];
+    [[AlisRequestManager sharedManager]startRequestModel:self service: ((id<AlisRequestProtocol>)self).currentService];
+    
 }
 
 @interface AlisServiceProxy ()
@@ -102,23 +114,28 @@ void requestContainer1(id self, SEL _cmd) {
     if (self = [super init]) {
         fetchCandidateRequestServices1();
         self.serviceAgents = [NSMutableDictionary dictionary];
-//        NSString *classString = NSStringFromClass([self class]);
-//        self.candidateServices = candidateRequestServices[classString];
         __weak typeof (self) weakSelf = self;
         self.businessLayer_requestFinishBlock = ^(AlisRequest *request ,AlisResponse *response ,AlisError *error){
             NSLog(@"在业务层完成了请求成功的回调");
             if (error) {
                 NSLog(@"失败了:原因->");
-            }else
-            {
-                [weakSelf handlerServiceResponse:request serviceName:[weakSelf toLocalServiceName:request.serviceName] response:response];
+                if ([request.context.makeRequestClass respondsToSelector:@selector(handlerServiceResponse:serviceName:error:)]) {
+                    [request.context.makeRequestClass handlerServiceResponse:request serviceName:nil response:response];
+                }
+            }
+            else{
+                if ([request.context.makeRequestClass respondsToSelector:@selector(handlerServiceResponse:serviceName:response:)]) {
+                    [request.context.makeRequestClass handlerServiceResponse:request serviceName:nil response:response];
+                }
             }
         };
         
         self.businessLayer_requestProgressBlock = ^(AlisRequest *request ,long long receivedSize, long long expectedSize){
             float progress = (float)(receivedSize)/expectedSize;
             NSLog(@"下载／上传进度---->%f",progress);
-            [weakSelf handlerServiceResponse:request serviceName:[weakSelf toLocalServiceName:request.serviceName] progress:progress];
+            if ([request.context.makeRequestClass respondsToSelector:@selector(handlerServiceResponse:serviceName:progress:)]) {
+                [request.context.makeRequestClass handlerServiceResponse:request serviceName:[weakSelf toLocalServiceName:request.serviceName] progress:progress];
+            }
         };
     }
     return self;
@@ -136,7 +153,18 @@ void requestContainer1(id self, SEL _cmd) {
     return NO;//[super resolveInstanceMethod:sel];
 }
 
+- (void)injectService:(id<AlisRequestProtocol>)object{
+    NSParameterAssert(object);
+    NSAssert([object conformsToProtocol:@protocol(AlisRequestProtocol)], @"'object' 需要服从协议");
+    
+    NSString *classString = NSStringFromClass([object class]);
+    _serviceAgents[classString] = object;
+}
+
 - (void)handlerServiceResponse:(AlisRequest *)request serviceName:(NSString *)serviceName response:(AlisResponse *)response{
+}
+
+- (void)handlerServiceResponse:(AlisRequest *)request serviceName:(NSString *)serviceName progress:(float)progress{
 }
 
 #pragma mark -- request parameters
@@ -152,54 +180,63 @@ void requestContainer1(id self, SEL _cmd) {
     return nil;
 }
 
-//- (NSDictionary *)requestParams{
-//    return nil;
-//}
+- (NSDictionary *)requestParams{
+    return nil;
+}
 
-//- (NSString *)api{
-//    NSDictionary *keys = self.candidateServices[_currentServiceName];
-//    NSString *api = keys[@"api"];
-//    return api;
-//}
+- (NSString *)api{
+    NSString *api = [self getParam:@"api"];
+    if (api) 
+        return api;
+    
+    return AlisHTTPMethodGET;
+}
 
 - (AlisRequestType)requestType{
-    NSDictionary *keys = self.candidateServices[_currentServiceName];
-    NSString *httpMethod = keys[@"httpMethod"];
-    
     return AlisRequestNormal;
 }
 
 - (AlisHTTPMethodType)httpMethod{
-    NSDictionary *keys = self.candidateServices[_currentServiceName];
-    NSString *httpMethod = keys[@"httpMethod"];
-    //if (httpMethod) return httpMethod;
+    NSString *httpMothod = [self getParam:@"httpMethod"];
+    if (httpMothod) 
+        return AlisHTTPMethodGET;
     
     return AlisHTTPMethodGET;
 }
 
 #pragma mark -- help
-
+- (NSString *)getParam:(NSString *)type{
+    if (type == nil) return nil;
+    
+    Service *service = self.currentService;
+    NSArray *sep = [service.serviceName componentsSeparatedByString:@"_"];
+    
+    if (sep.count < 2 || sep == nil) {
+        NSLog(@"service.serviceName 有问题");
+        return nil;
+    }
+    
+    NSString *agentClass = sep[0];
+    NSString *agentServiceAction = sep[1];
+    
+    NSDictionary *agentClassKeys = candidateRequestServices[agentClass];
+    NSDictionary *agentServiceActionKeys = agentClassKeys[agentServiceAction];
+    NSString *value = agentServiceActionKeys[type];
+    return value;
+    
+}
 /**
  全局serviceName变为local的serviceName 
  @param globalServiceName 全局serviceName
  @return local的serviceName
  */
 - (NSString *)toLocalServiceName:(NSString *)globalServiceName{
-    
     if (globalServiceName == nil) return nil;
     NSArray *serviceArray = [globalServiceName componentsSeparatedByString:@"_"];
     if (serviceArray.count == 2) {
         return serviceArray[1];
     }
     return nil;
-}
-
-- (void)injectService:(id<AlisRequestProtocol>)object{
-    NSParameterAssert(object);
-    NSAssert([object conformsToProtocol:@protocol(AlisRequestProtocol)], @"'object' 需要服从协议");
-    
-    NSString *classString = NSStringFromClass([object class]);
-    _serviceAgents[classString] = object;
 }
 
 #pragma mark --
@@ -209,27 +246,27 @@ void requestContainer1(id self, SEL _cmd) {
 //}
 
 - (NSMethodSignature *)methodSignatureForSelector:(SEL)sel{
-//    NSString *selString = NSStringFromSelector(sel);
-//    if ([selString containsString:@"resume_"]) {
-//        class_addMethod([self class], sel, (IMP)requestContainer1, "@:");
-//        
-//    }
-//
-//    for (id object in self.agents) {
-//        if ([object respondsToSelector:sel]) {
-//            return [object methodSignatureForSelector:sel];
-//        }
-//    }
+    //    NSString *selString = NSStringFromSelector(sel);
+    //    if ([selString containsString:@"resume_"]) {
+    //        class_addMethod([self class], sel, (IMP)requestContainer1, "@:");
+    //        
+    //    }
+    //
+    //    for (id object in self.agents) {
+    //        if ([object respondsToSelector:sel]) {
+    //            return [object methodSignatureForSelector:sel];
+    //        }
+    //    }
     return [super methodSignatureForSelector:sel];
 }
 
 - (void)forwardInvocation:(NSInvocation *)invocation{
-//    for (id object in self.agents) {
-//        if ([object respondsToSelector:invocation.selector]) {
-//            [invocation invokeWithTarget:object];
-//            return;
-//        }
-//    }
+    //    for (id object in self.agents) {
+    //        if ([object respondsToSelector:invocation.selector]) {
+    //            [invocation invokeWithTarget:object];
+    //            return;
+    //        }
+    //    }
     [super forwardInvocation:invocation];
 }
 

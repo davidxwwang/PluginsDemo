@@ -25,6 +25,14 @@
 - (void)startRequest:(AlisRequest *)request;
 - (void)startRequestModel:(id<AlisRequestProtocol>)requestModel;
 
+/**
+ 发出请求
+ 
+ @param requestModel requestModel AlisServiceProxy
+ @param service service 保存发出请求类的信息
+ */
+- (void)startRequestModel:(id<AlisRequestProtocol> _Nonnull)requestModel service:(Service * _Nonnull)service;
+
 - (void)cancelRequest:(AlisRequest *)request;
 
 //注意：
@@ -41,18 +49,18 @@
  网络层的存在，而网络请求所需要的参数可以在用户层找到。
  - (void)startRequest:(AlisRequest *)request;
  - (void)startRequestModel:(id<AlisRequestProtocol>)requestModel;
-
+ 
  所有AlisRequest的回调（成功）都在AlisRequestManager中，再在AlisRequestManager中向用户层发回调。
  
  */
 
 
 - (void)sendChainRequest:
-    (AlisChainRConfigBlock)chainRequestConfigBlock
+(AlisChainRConfigBlock)chainRequestConfigBlock
                  success:(AlisChainRSucessBlock)success
                  failure:(AlisChainRFailBlock)failure
                   finish:(AlisChainRFinishedBlock)finish;
-    
+
 @end
 
 
@@ -63,15 +71,15 @@
  V1版 把所有结果都返回，不要管太多
  */
 @interface AlisChainRequestmanager : NSObject
-    
+
 @property (nonatomic, copy, readonly) NSString *identifier;
 @property (nonatomic, strong, readonly) AlisRequest *runningRequest;
-    
+
 - (AlisChainRequestmanager *)onFirst:(AlisRequestConfigBlock)firstBlock;
 - (AlisChainRequestmanager *)onNext:(AlisChainNextRBlock)nextBlock;
-    
+
 - (BOOL)onFinishedOneRequest:(AlisRequest *)request response:(nullable id)responseObject error:(nullable NSError *)error;
-    
+
 @end
 
 

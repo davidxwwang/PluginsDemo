@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "AlisRequestProtocol.h"
 #import "AlisRequestConst.h"
+#import "AlisRequestContext.h"
 
 @class AlisRequest,AlisResponse,AlisError,AlisUpLoadFormData;
 
@@ -22,8 +23,9 @@ typedef void(^AlisRequestProgressRequest)(AlisRequest *request ,long long receiv
 
 + (AlisRequest *)request;
 
-//请求所处的环境，先假定为发出请求的类，也可以新增属性：例如->网络环境，电量，内存状况等。
-@property(strong,nonatomic) NSString *context;
+//请求所处的上下文，先假定为发出请求的类，也可以新增属性：例如->网络环境，电量，内存状况等。
+//方便后期的回调
+@property(strong,nonatomic) AlisRequestContext *context;
 
 //在业务层绑定的requestModel
 @property(strong,nonatomic,nullable) id<AlisRequestProtocol> bindRequestModel;
@@ -83,6 +85,11 @@ typedef void(^AlisRequestProgressRequest)(AlisRequest *request ,long long receiv
 - (void)addFormDataWithName:(NSString *)name fileURL:(NSString *)fileURL;
 
 @property(strong,nonatomic)NSMutableArray<AlisUpLoadFormData *> *uploadFormDatas;
+
+/**
+ 下载路径
+ */
+@property(copy,nonatomic)NSString *downloadPath;
 
 @end
 

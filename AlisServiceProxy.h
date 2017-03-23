@@ -12,7 +12,11 @@
 #import "AlisRequestProtocol.h"
 #import <Foundation/Foundation.h>
 
-#define resumeService1(yy) ([[AlisServiceProxy shareManager] performSelector:NSSelectorFromString([@"resume_"  stringByAppendingFormat:@"%@", yy])])
+#define resumeService1(yy) {[AlisServiceProxy shareManager].currentServiceAgent = self;\
+[[AlisServiceProxy shareManager] performSelector:NSSelectorFromString([@"resume_"  stringByAppendingFormat:@"%@", yy])];}
+
+
+//#define resumeService1(yy) ([[AlisServiceProxy shareManager] performSelector:NSSelectorFromString([@"resume_"  stringByAppendingFormat:@"%@", yy])])
 #define cancelService1(yy) ([self performSelector:NSSelectorFromString([@"cancel_"  stringByAppendingFormat:@"%@", yy])])
 #define suspendService1(yy) ([self performSelector:NSSelectorFromString([@"suspend_"  stringByAppendingFormat:@"%@", yy])])
 #define ServiceIs1(yy,xx) ([yy isEqualToString:xx])
@@ -35,9 +39,15 @@
 
 @interface AlisServiceProxy : NSObject<AlisRequestProtocol,VCServiceProtocol>
 
-+ (VCService *)shareManager;
++ (AlisServiceProxy *)shareManager;
 
 @property(copy,nonatomic)NSString *currentServiceName;
+
+
+/**
+ 当前服务的agent
+ */
+@property(strong,nonatomic)id<AlisRequestProtocol> currentServiceAgent;
 
 @end
 

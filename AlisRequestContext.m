@@ -25,7 +25,7 @@
 - (instancetype)init{
     if (self = [super init]) {
         [[AFNetworkReachabilityManager  manager] startMonitoring];
-          [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(networkingReachabilityDidChange:) name:AFNetworkingReachabilityDidChangeNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(networkingReachabilityDidChange:) name:AFNetworkingReachabilityDidChangeNotification object:nil];
         
     }
     return self;
@@ -42,7 +42,7 @@
     NSNumber *status = userinfo[AFNetworkingReachabilityNotificationStatusItem];
     
     self.networkReachabilityStatus = AlisNetworkReachabilityStatusReachableViaWiFi;
-
+    
     
     //    AFNetworkReachabilityStatus reachStatus = userinfo[AFNetworkingReachabilityNotificationStatusItem];
     //    NSLog(@"");
