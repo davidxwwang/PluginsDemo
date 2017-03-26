@@ -15,37 +15,12 @@
 
 - (void)perseRequest:(AlisRequest *)request config:(AlisRequestConfig *)config
 {
-//    __weak typeof(self) weakSelf = self;
-//    __weak typeof(request) weakRequest = request;
-//    request.startBlock = ^(void){
-//        [weakSelf startRequest:weakRequest config:config];
-//    };
-//    
-//    request.cancelBlock = ^(void){
-//        [weakSelf cancelRequest:weakRequest];
-//    };
     [self startRequest:request config:config];
     
 }
 
 - (void)startRequest:(AlisRequest *)request config:(AlisRequestConfig *)config
 {
-//    return;
-//    NSString *urlString = nil;//[NSMutableString string];
-//    if (request.server) {
-//        if (request.api) {
-//            urlString = [NSString stringWithFormat:@"%@%@",request.server,request.api];
-//        }
-//    }else{
-//        if (request.useGeneralServer == YES) {
-//            urlString = [NSString stringWithFormat:@"%@%@",config.generalServer,request.api];
-//        }
-//    }
-//    
-//    NSAssert(urlString, @"url should not nil");
-//    
-//    NSURL *url = [NSURL URLWithString:urlString];
-    
     //第三方的请求发起
     NSURL *requestURL = [NSURL URLWithString:request.url];
     request.bindRequest = [[SDWebImageManager sharedManager] downloadImageWithURL:requestURL options:SDWebImageContinueInBackground progress:^(NSInteger receivedSize, NSInteger expectedSize) {

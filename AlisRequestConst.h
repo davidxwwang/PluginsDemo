@@ -24,6 +24,7 @@ typedef NS_ENUM(NSInteger, AlisNetworkReachabilityStatus) {
  请求类型
  */
 typedef NS_ENUM(NSInteger, AlisRequestType) {
+    AlisRequestUnknow    = -1,
     AlisRequestNormal    = 0,    //!< Normal HTTP request type, such as GET, POST, ...
     AlisRequestUpload    = 1,    //!< Upload request type
     AlisRequestDownload  = 2,    //!< Download request type
@@ -33,6 +34,7 @@ typedef NS_ENUM(NSInteger, AlisRequestType) {
  请求方法
  */
 typedef NS_ENUM(NSInteger, AlisHTTPMethodType) {
+    AlisHTTPMethodUnknow = -1,
     AlisHTTPMethodGET    = 0,    //!< GET
     AlisHTTPMethodPOST   = 1,    //!< POST
     AlisHTTPMethodHEAD   = 2,    //!< HEAD

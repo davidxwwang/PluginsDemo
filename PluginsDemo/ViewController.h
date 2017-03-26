@@ -10,6 +10,7 @@
 
 @interface ViewController : UIViewController<AlisRequestProtocol>
 
+@property(copy,nonatomic)NSString *currentRequest;
 
 @end
 

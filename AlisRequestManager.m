@@ -12,14 +12,13 @@
 #import "AlisPluginManager.h"
 #import "AlisRequestConst.h"
 #import "Service.h"
+#import "AlisRequestManager+AlisRequest.h"
 
 @interface AlisRequestManager ()
 
 @property(weak,nonatomic) id<AlisRequestProtocol>requestModel;
 
 @property(strong,nonatomic)AlisPluginManager *pluginManager;
-
-@property(strong,nonatomic)dispatch_semaphore_t semaphore;
 
 @end
 
@@ -151,111 +150,126 @@
 #pragma mark ---
 //访问网络前的最后准备，准备好请求地址，头head，参数parameters，body，url，回调方法等等
 - (void)prepareRequest:(AlisRequest *)request requestModel:(id<AlisRequestProtocol>)requestModel service:(Service *)service{
-    //设置请求的上下文
-    request.context.makeRequestClass = service.serviceAgent;
-    request.context.serviceName = service.serviceName;
     
-    // NSAssert([requestModel respondsToSelector:@selector(api)], @"request API should not nil");
-    
-    if ([service.serviceAgent respondsToSelector:@selector(requestType)]) {
-        request.requestType = [service.serviceAgent requestType];
-    }else if ([requestModel respondsToSelector:@selector(requestType)]) {
-        request.requestType = [requestModel requestType];
-    }else{
-        NSLog(@"'requestType' 没有设置，默认在AlisRequest中设置");
-    }
-    
-    if (request.requestType == AlisRequestDownload) {
-        if ([service.serviceAgent respondsToSelector:@selector(fileURL)]) {
-            request.downloadPath = [service.serviceAgent fileURL];
-        }else if ([requestModel respondsToSelector:@selector(fileURL)]) {
-            request.downloadPath = [requestModel fileURL];
-        }
-        
-        if(request.downloadPath == nil){
-            NSLog(@"下载任务，没有设置下载的路径!!!");
-        }
-    }
-    
-    if ([service.serviceAgent respondsToSelector:@selector(httpMethod)]) {
-        request.httpMethod = [service.serviceAgent httpMethod];
-    }else if ([requestModel respondsToSelector:@selector(httpMethod)]) {
-        request.httpMethod = [requestModel httpMethod];
-    }else{
-        NSLog(@"'httpMethod' 没有设置，默认在AlisRequest中设置");
-    }
-    
-    if ([service.serviceAgent respondsToSelector:@selector(api)]) {
-        request.api = [service.serviceAgent api];
-    }else if ([requestModel respondsToSelector:@selector(api)]) {
-        request.api = [requestModel api];
-    }else{
-        NSLog(@"'api' 没有设置，这个必须手动设置");
-    }
-    
-    if ([service.serviceAgent respondsToSelector:@selector(server)]) {
-        request.server = [service.serviceAgent server];
-    }else if ([requestModel respondsToSelector:@selector(server)]) {
-        request.server = [requestModel server];
-    }else if (request.useGeneralServer == YES){
-        request.server = _config.generalServer;
-    }else{
-        NSLog(@"'server' 没有设置，这个必须手动设置");
-    }
-    
-    NSString *urlString = [NSString stringWithFormat:@"%@%@",request.server,request.api];
-    NSAssert(urlString, @"url should not nil");
-    request.url = urlString;//[requestModel url];
-    
-    NSMutableDictionary *header = [NSMutableDictionary dictionary];
-    if ([service.serviceAgent respondsToSelector:@selector(requestHead)]) {
-        [header addEntriesFromDictionary:[requestModel requestHead]];
-    }
-    if ([requestModel respondsToSelector:@selector(requestHead)]) {
-        [header addEntriesFromDictionary:[requestModel requestHead]];
-    }
-    if (request.useGeneralHeaders) {
-        [header addEntriesFromDictionary:self.config.generalHeader];
-    }
-    if (header == nil || header.count == 0){
-        NSLog(@"'head' 一无所有");
-    }
-    request.header = header;
-    
-    NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
-    if ([service.serviceAgent respondsToSelector:@selector(requestParams)]) {
-        [header addEntriesFromDictionary:[requestModel requestParams]];
-    }
-    if ([requestModel respondsToSelector:@selector(requestParams)]) {
-        [header addEntriesFromDictionary:[requestModel requestParams]];
-    }
-    if (request.useGeneralParameters) {
-        [header addEntriesFromDictionary:self.config.generalParamters];
-    }
-    if (parameters == nil || parameters.count == 0) {
-        NSLog(@"'head' 一无所有");
-    }
-    request.parameters = parameters;
-    
-    //请求的回调
-    request.finishBlock = ^(AlisRequest *request ,AlisResponse *response ,AlisError *error){
-        if(self.config.enableSync){
-            dispatch_semaphore_signal(_semaphore);
-        }
-        //各个业务层的回调
-        if (error) {
-            [self failureWithError:error withRequest:request];
-        }
-        else{
-            [self successWithResponse:response withRequest:request];
-        }
-    };
-    
-    __weak typeof (request) weakRequest = request;
-    request.progressBlock = ^(AlisRequest *request,long long receivedSize, long long expectedSize){
-        //各个业务层的回调
-        weakRequest.bindRequestModel.businessLayer_requestProgressBlock(request,receivedSize,expectedSize);
-    };
+    [self adapteAlisRequest:request requestModel:requestModel service:service];
+//    //设置请求的上下文
+//    request.context.makeRequestClass = service.serviceAgent;
+//    request.context.serviceName = service.serviceName;
+//    
+//    // NSAssert([requestModel respondsToSelector:@selector(api)], @"request API should not nil");
+//    
+//    if ([service.serviceAgent respondsToSelector:@selector(requestType)]) {
+//        request.requestType = [service.serviceAgent requestType];
+//    }else if ([requestModel respondsToSelector:@selector(requestType)]) {
+//        request.requestType = [requestModel requestType];
+//    }else{
+//        NSLog(@"'requestType' 没有设置，默认在AlisRequest中设置");
+//    }
+//    
+//    if (request.requestType == AlisRequestDownload) {
+//        if ([service.serviceAgent respondsToSelector:@selector(fileURL)]) {
+//            request.downloadPath = [service.serviceAgent fileURL];
+//        }else if ([requestModel respondsToSelector:@selector(fileURL)]) {
+//            request.downloadPath = [requestModel fileURL];
+//        }
+//        
+//        if(request.downloadPath == nil){
+//            NSLog(@"下载任务，没有设置下载的路径!!!");
+//        }
+//    }else if (request.requestType == AlisRequestUpload) {
+//        if ([service.serviceAgent respondsToSelector:@selector(fileURL)]) {
+//           [request addFormDataWithName:@"test1" fileURL:[service.serviceAgent fileURL]];
+//        }
+//            
+//        if ([service.serviceAgent respondsToSelector:@selector(uploadData)]) {
+//            [request addFormDataWithName:@"test2" fileData:[service.serviceAgent uploadData]];
+//        }
+//            
+//        if(request.downloadPath == nil){
+//            NSLog(@"下载任务，没有设置下载的路径!!!");
+//        }
+//    }
+//
+//    
+//    if ([service.serviceAgent respondsToSelector:@selector(httpMethod)]) {
+//        request.httpMethod = [service.serviceAgent httpMethod];
+//    }else if ([requestModel respondsToSelector:@selector(httpMethod)]) {
+//        request.httpMethod = [requestModel httpMethod];
+//    }else{
+//        NSLog(@"'httpMethod' 没有设置，默认在AlisRequest中设置");
+//    }
+//    
+//    if ([service.serviceAgent respondsToSelector:@selector(api)]) {
+//        request.api = [service.serviceAgent api];
+//    }else if ([requestModel respondsToSelector:@selector(api)]) {
+//        request.api = [requestModel api];
+//    }else{
+//        NSLog(@"'api' 没有设置，这个必须手动设置");
+//    }
+//    
+//    if ([service.serviceAgent respondsToSelector:@selector(server)]) {
+//        request.server = [service.serviceAgent server];
+//    }else if ([requestModel respondsToSelector:@selector(server)]) {
+//        request.server = [requestModel server];
+//    }else if (request.useGeneralServer == YES){
+//        request.server = _config.generalServer;
+//    }else{
+//        NSLog(@"'server' 没有设置，这个必须手动设置");
+//    }
+//    
+//    NSString *urlString = [NSString stringWithFormat:@"%@%@",request.server,request.api];
+//    NSAssert(urlString, @"url should not nil");
+//    request.url = urlString;//[requestModel url];
+//    
+//    NSMutableDictionary *header = [NSMutableDictionary dictionary];
+//    if ([service.serviceAgent respondsToSelector:@selector(requestHead)]) {
+//        [header addEntriesFromDictionary:[requestModel requestHead]];
+//    }
+//    if ([requestModel respondsToSelector:@selector(requestHead)]) {
+//        [header addEntriesFromDictionary:[requestModel requestHead]];
+//    }
+//    if (request.useGeneralHeaders) {
+//        [header addEntriesFromDictionary:self.config.generalHeader];
+//    }
+//    if (header == nil || header.count == 0){
+//        NSLog(@"'head' 一无所有");
+//    }
+//    request.header = header;
+//    
+//    NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
+//    if ([service.serviceAgent respondsToSelector:@selector(requestParams)]) {
+//        [header addEntriesFromDictionary:[requestModel requestParams]];
+//    }
+//    if ([requestModel respondsToSelector:@selector(requestParams)]) {
+//        [header addEntriesFromDictionary:[requestModel requestParams]];
+//    }
+//    if (request.useGeneralParameters) {
+//        [header addEntriesFromDictionary:self.config.generalParamters];
+//    }
+//    if (parameters == nil || parameters.count == 0) {
+//        NSLog(@"'head' 一无所有");
+//    }
+//    request.parameters = parameters;
+//    
+//    //请求的回调
+//    request.finishBlock = ^(AlisRequest *request ,AlisResponse *response ,AlisError *error){
+//        if(self.config.enableSync){
+//            dispatch_semaphore_signal(_semaphore);
+//        }
+//        //各个业务层的回调
+//        if (error) {
+//            [self failureWithError:error withRequest:request];
+//        }
+//        else{
+//            [self successWithResponse:response withRequest:request];
+//        }
+//    };
+//    
+//    __weak typeof (request) weakRequest = request;
+//    request.progressBlock = ^(AlisRequest *request,long long receivedSize, long long expectedSize){
+//        //各个业务层的回调
+//        weakRequest.bindRequestModel.businessLayer_requestProgressBlock(request,receivedSize,expectedSize);
+//    };
 }
 
 //访问网络前的最后准备，准备好请求地址，头head，参数parameters，body，url，回调方法等等

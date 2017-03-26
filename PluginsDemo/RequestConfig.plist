@@ -4,6 +4,15 @@
 <dict>
 	<key>ViewController</key>
 	<dict>
+		<key>uploadData</key>
+		<dict>
+			<key>httpMethod</key>
+			<string>POST</string>
+			<key>protocol</key>
+			<string>http</string>
+			<key>api</key>
+			<string>asa</string>
+		</dict>
 		<key>AskDemo</key>
 		<dict>
 			<key>httpMethod</key>

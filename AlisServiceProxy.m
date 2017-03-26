@@ -168,6 +168,9 @@ void requestContainer1(id self, SEL _cmd) {
 }
 
 #pragma mark -- request parameters
+- (NSDictionary *)requestHead{
+    return nil;
+}
 - (NSData *)uploadData{
     return nil;
 }
@@ -186,9 +189,9 @@ void requestContainer1(id self, SEL _cmd) {
 
 - (NSString *)api{
     NSString *api = [self getParam:@"api"];
-    if (api) 
+    if (api){
         return api;
-    
+    }
     return AlisHTTPMethodGET;
 }
 

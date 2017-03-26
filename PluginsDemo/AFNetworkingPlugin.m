@@ -29,18 +29,16 @@
         [request.uploadFormDatas enumerateObjectsUsingBlock:^(AlisUpLoadFormData *obj, NSUInteger idx, BOOL * _Nonnull stop) {
             if (obj.fileData) {
                 [formData appendPartWithFormData:obj.fileData name:obj.name];
-            }else if (obj.fileURL)
-            {
+            }
+            else if (obj.fileURL){
                 NSError *fileError = nil;
                 [formData appendPartWithFileURL:obj.fileURL name:obj.fileName error:&fileError];
-                
                 if (fileError) {
                     serializationError = fileError;
                     *stop = YES;
                 }
             }
         }];
-        
     } error:&serializationError];
 
     NSURLSessionTask *task2 = [_sessionManager dataTaskWithRequest:urlRequest uploadProgress:^(NSProgress * _Nonnull uploadProgress) {

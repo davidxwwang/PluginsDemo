@@ -22,6 +22,8 @@
 
 @property(strong,nonatomic,nullable)AlisRequestContext *requestContext;
 
+@property(strong,nonatomic)dispatch_semaphore_t semaphore;
+
 - (void)startRequest:(AlisRequest *)request;
 - (void)startRequestModel:(id<AlisRequestProtocol>)requestModel;
 
@@ -51,9 +53,10 @@
  - (void)startRequestModel:(id<AlisRequestProtocol>)requestModel;
  
  所有AlisRequest的回调（成功）都在AlisRequestManager中，再在AlisRequestManager中向用户层发回调。
- 
  */
 
+- (void)failureWithError:(AlisError *)error withRequest:(AlisRequest *)request;
+- (void)successWithResponse:(AlisResponse *)response withRequest:(AlisRequest *)request;
 
 - (void)sendChainRequest:
 (AlisChainRConfigBlock)chainRequestConfigBlock
@@ -62,6 +65,7 @@
                   finish:(AlisChainRFinishedBlock)finish;
 
 @end
+
 
 
 #pragma mark - XMChainRequest

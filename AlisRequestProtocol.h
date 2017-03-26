@@ -41,8 +41,6 @@ typedef void(^AlisRequestProgressRequest)(AlisRequest *request ,long long receiv
 @property(copy,nonatomic)AlisRequestFinishRequest businessLayer_requestFinishBlock;
 @property(copy,nonatomic)AlisRequestProgressRequest businessLayer_requestProgressBlock;
 
-
-
 #pragma mark -- 上传文件情况使用
 //文件在沙盒里的位置,如果上传，就是源地址／如果下载任务，就是目的地址
 - (NSString *)fileURL;
