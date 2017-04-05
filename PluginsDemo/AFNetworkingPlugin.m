@@ -14,6 +14,7 @@
 @interface AFNetworkingPlugin ()
 
 @property(strong,nonatomic) AFHTTPSessionManager *sessionManager;
+@property(strong,nonatomic) AFHTTPSessionManager *securitySessionManager;
 
 @end
 
@@ -32,7 +33,7 @@
             }
             else if (obj.fileURL){
                 NSError *fileError = nil;
-                [formData appendPartWithFileURL:obj.fileURL name:obj.fileName error:&fileError];
+                [formData appendPartWithFileURL:obj.fileURL name:obj.name error:&fileError];
                 if (fileError) {
                     serializationError = fileError;
                     *stop = YES;
@@ -72,7 +73,8 @@
     NSURLSessionDownloadTask *downloadtask = [_sessionManager downloadTaskWithRequest:__request progress:^(NSProgress * _Nonnull downloadProgress) {
         
     } destination:^NSURL * _Nonnull(NSURL * _Nonnull targetPath, NSURLResponse * _Nonnull response) {
-        return [NSURL URLWithString:@"xx"];
+        NSString *__path = [NSString stringWithFormat:@"%@%@",@"file://localhost/",request.downloadPath];
+        return [NSURL URLWithString:__path];
         
     } completionHandler:^(NSURLResponse * _Nonnull response, NSURL * _Nullable filePath, NSError * _Nullable error) {
         
@@ -91,6 +93,7 @@
     NSMutableURLRequest *__request = [_sessionManager.requestSerializer requestWithMethod:httpMethod URLString:request.url parameters:request.parameters error:&error];
     __request.timeoutInterval = request.timeoutInterval;
     __request.allHTTPHeaderFields = request.header;
+
     
     if (error && request.finishBlock) {
         AlisError *_error = [self perseError:error];
@@ -119,7 +122,9 @@
 }
 
 - (void)initSessionManager:(AlisRequest *)request{
-    AFHTTPSessionManager  *sessionManager = [[AFHTTPSessionManager alloc] initWithBaseURL:nil];
+    
+    AFHTTPSessionManager *sessionManager = [self getSessionmanager:request];
+     
     sessionManager.requestSerializer.timeoutInterval = request.timeoutInterval;
     sessionManager.requestSerializer.stringEncoding = NSUTF8StringEncoding;
     
@@ -155,12 +160,19 @@
 
 - (AlisResponse *)perseResponse:(id)rawResponse request:(AlisRequest *)request
 {
-    if ( !rawResponse || ![rawResponse isKindOfClass:[UIImage class]]) {
+    if ( !rawResponse ) {
         return nil;
     }
-    NSDictionary *data = @{@"image":rawResponse};
+    NSDictionary *data = (NSDictionary *)rawResponse;
     AlisResponse *response = [[AlisResponse alloc]initWithInfo:data];
     return response;
+
+//    if ( !rawResponse || ![rawResponse isKindOfClass:[UIImage class]]) {
+//        return nil;
+//    }
+//    NSDictionary *data = @{@"image":rawResponse};
+//    AlisResponse *response = [[AlisResponse alloc]initWithInfo:data];
+//    return response;
 }
 
 - (AlisError *)perseError:(id)rawError
@@ -196,6 +208,44 @@
     
     return nil;
 }
+
+- (BOOL)shouleSSLPinningWithURL:(NSString *)url{
+    return NO;
+}
+
+- (AFHTTPSessionManager *)getSessionmanager:(AlisRequest *)request{
+    if ([self shouleSSLPinningWithURL:request.url]) {
+        return self.securitySessionManager;
+    }
+    else{
+        return self.sessionManager;
+    }
+}
+
+
+- (AFHTTPSessionManager *)sessionManager {
+    if (!_sessionManager) {
+        _sessionManager = [AFHTTPSessionManager manager];
+//        _sessionManager.requestSerializer = self.afHTTPRequestSerializer;
+//        _sessionManager.responseSerializer = self.afHTTPResponseSerializer;
+        _sessionManager.operationQueue.maxConcurrentOperationCount = 5;
+   //     _sessionManager.completionQueue = xm_request_completion_callback_queue();
+    }
+    return _sessionManager;
+}
+
+- (AFHTTPSessionManager *)securitySessionManager {
+    if (!_securitySessionManager) {
+        _securitySessionManager = [AFHTTPSessionManager manager];
+//        _securitySessionManager.requestSerializer = self.afHTTPRequestSerializer;
+//        _securitySessionManager.responseSerializer = self.afHTTPResponseSerializer;
+        _securitySessionManager.securityPolicy = [AFSecurityPolicy policyWithPinningMode:AFSSLPinningModeCertificate];
+        _securitySessionManager.operationQueue.maxConcurrentOperationCount = 5;
+   //     _securitySessionManager.completionQueue = xm_request_completion_callback_queue();
+    }
+    return _securitySessionManager;
+}
+
 
 @end
 

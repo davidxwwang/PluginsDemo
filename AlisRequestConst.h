@@ -10,7 +10,7 @@
 #define AlisRequestConst_h
 #import <Foundation/Foundation.h>
 
-@class AlisRequest,AlisChainRequestmanager,AlisRequestManager;
+@class AlisRequest,AlisChainRequest,AlisRequestManager,AlisError;
 /**
  网络状况
  */
@@ -45,13 +45,13 @@ typedef NS_ENUM(NSInteger, AlisHTTPMethodType) {
 
 typedef void(^AlisRequestConfigBlock)( AlisRequest *_Nonnull request);
 
-typedef void (^AlisChainNextRBlock)(AlisRequest *_Nonnull request, id _Nullable responseObject, NSError * error);
+typedef void (^AlisChainNextRBlock)(AlisRequest *_Nonnull request, id _Nullable responseObject, AlisError * __nullable error);
 
-typedef void (^AlisChainRConfigBlock)( AlisChainRequestmanager * _Nonnull request);
+typedef void (^AlisChainRConfigBlock)( AlisChainRequest * _Nonnull request);
 
-typedef void(^AlisChainRSucessBlock)(NSArray * _Nonnull responseArray);
-typedef void(^AlisChainRFailBlock)(id _Nonnull data);
-typedef void(^AlisChainRFinishedBlock)(id _Nonnull data);
+typedef void(^AlisChainRSucessBlock)(NSArray * __nullable responseArray);
+typedef void(^AlisChainRFailBlock)(NSArray * __nullable errorArray);
+typedef void(^AlisChainRFinishedBlock)(NSArray * _Nonnull responseArray ,NSArray * __nullable errorArray);
 
 
 #endif /* AliRequestConst_h */

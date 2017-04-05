@@ -17,6 +17,16 @@
 + (AlisRequestManager *)sharedManager;
 + (AlisRequestManager *)manager;
 
+/**
+ HTTPS 网站集合
+ */
+@property(strong,nonatomic)NSMutableArray *sslPinningHosts;
+
+/**
+ HTTPS 证书集合
+ */
+@property(strong,nonatomic)NSMutableArray *certSet;
+
 //所有请求的数组，元素为alirequest，请求发出，加入数组；请求结束，取消从数组中删掉；请求暂停不删除
 @property(strong,nonatomic,nullable)NSMutableDictionary *requestSet;
 
@@ -74,15 +84,19 @@
 /**
  V1版 把所有结果都返回，不要管太多
  */
-@interface AlisChainRequestmanager : NSObject
+@interface AlisChainRequest : NSObject
 
 @property (nonatomic, copy, readonly) NSString *identifier;
 @property (nonatomic, strong, readonly) AlisRequest *runningRequest;
 
-- (AlisChainRequestmanager *)onFirst:(AlisRequestConfigBlock)firstBlock;
-- (AlisChainRequestmanager *)onNext:(AlisChainNextRBlock)nextBlock;
+- (instancetype)initWithBlocks:(AlisChainRSucessBlock)success
+               failure:(AlisChainRFailBlock)failure
+                finish:(AlisChainRFinishedBlock)finish;
 
-- (BOOL)onFinishedOneRequest:(AlisRequest *)request response:(nullable id)responseObject error:(nullable NSError *)error;
+- (AlisChainRequest *)onFirst:(AlisRequestConfigBlock)firstBlock;
+- (AlisChainRequest *)onNext:(AlisChainNextRBlock)nextBlock;
+
+- (BOOL)onFinishedOneRequest:(AlisRequest *)request response:(nullable id)responseObject error:(nullable AlisError *)error;
 
 @end
 

@@ -107,6 +107,6 @@ typedef void(^AlisRequestProgressRequest)(AlisRequest *request ,long long receiv
 @property(copy,nonatomic,nullable)NSString *mimeType;
 
 + (instancetype)formUploadDataWithName:(NSString *)name fileData:(NSData *)fileData;
-+ (instancetype)formUploadDataWithName:(NSString *)name fileURL:(NSString *)fileURL;
++ (instancetype)formUploadDataWithName:(NSString *)name fileURL:(NSURL *)fileURL;
 
 @end

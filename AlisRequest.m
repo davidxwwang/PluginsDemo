@@ -19,7 +19,7 @@
 - (instancetype)init
 {
     if (self = [super init]) {
-        _timeoutInterval = 30;
+        _timeoutInterval = 15;
         _useGeneralServer = YES;
         _useGeneralHeaders = YES;
         _useGeneralParameters = YES;
@@ -48,7 +48,8 @@
 }
 
 - (void)addFormDataWithName:(NSString *)name fileURL:(NSString *)fileURL{
-    AlisUpLoadFormData *formData = [AlisUpLoadFormData formUploadDataWithName:name fileURL:fileURL];
+    NSURL *_fileURL = [NSURL URLWithString:fileURL];
+    AlisUpLoadFormData *formData = [AlisUpLoadFormData formUploadDataWithName:name fileURL:_fileURL];
     [self.uploadFormDatas addObject:formData];
 }
 

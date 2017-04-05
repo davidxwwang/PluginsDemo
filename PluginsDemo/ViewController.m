@@ -16,16 +16,14 @@
 static NSString *testServer = @"http://baobab.wdjcdn.com";
 static NSString *testApi = @"/1442142801331138639111.mp4";
 @interface ViewController ()
-
-
-
 @end
 
 @implementation ViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    _currentRequest = @"AskDemo";
+    [[AlisServiceProxy shareManager] injectService:self];
+    _currentRequest = @"uploadData";
     [[AlisRequestManager sharedManager] setupConfig:^(AlisRequestConfig *config) {
         config.generalServer = testServer;
         config.callBackQueue = dispatch_queue_create("david", DISPATCH_QUEUE_CONCURRENT);
@@ -35,26 +33,39 @@ static NSString *testApi = @"/1442142801331138639111.mp4";
     }];
     
     [[AlisPluginManager manager]registerALLPlugins];
-//    VCService2 *service2 = [[VCService2 alloc]init];
-//    [service2 customAsk];
     
-//    [[AlisRequestManager sharedManager]sendChainRequest:^( AlisChainRequestmanager *manager){
-//        [[manager onFirst:^(AlisRequest *request) {
-//            
-//        }] onNext:^(AlisRequest *request, id  _Nullable responseObject, NSError *error) {
-//            //上一次的请求结果，在responseObject中
-//        }];
-//        
-//    } success:^(NSArray *responseArray) {
-//        
-//    } failure:^(id data) {
-//        
-//    } finish:^(id data) {
-//        
-//    }]; 
-    [[AlisServiceProxy shareManager] injectService:self];
+    [[AlisRequestManager sharedManager]sendChainRequest:^( AlisChainRequest *manager){
+        [[[manager onFirst:^(AlisRequest *request) {
+            request.url = @"https://httpbin.org/get";
+            request.httpMethod = AlisHTTPMethodGET;
+            request.parameters = @{@"method": @"get"};            
+        }] onNext:^(AlisRequest *request, id  _Nullable responseObject, AlisError *error) {
+            //上一次的请求结果，在responseObject中
+            NSLog(@"此时第一个请求返回结果了，可以依据它，设置第二个请求");
+            request.url = @"https://httpbin.org/post";
+            request.httpMethod = AlisHTTPMethodGET;
+            request.parameters = @{@"method": @"post"};
+        }]onNext:^(AlisRequest *request, id  _Nullable responseObject, AlisError *error) {
+            //上一次的请求结果，在responseObject中
+            NSLog(@"此时第一个请求返回结果了，可以依据它，设置第二个请求");
+            request.url = @"https://httpbin.org/put";
+            request.httpMethod = AlisHTTPMethodPUT;
+            request.parameters = @{@"method": @"put"};
+        }];
+        
+    } success:^(NSArray *__nullable responseArray) {
+        NSLog(@"success");
+        
+    } failure:^(NSArray * __nullable errorArray) {
+        NSLog(@"failure");
+        
+    } finish:^(NSArray * _Nonnull responseArray ,NSArray * __nullable errorArray) {
+        NSLog(@"链式请求结束了 不容易啊");
+        
+    }]; 
+    
     //resumeService1(@"AskDemo");
-    resumeService1(@"uploadData");
+    //resumeService1(@"uploadData");
 }
 
 #pragma mark -- http 
@@ -100,9 +111,9 @@ static NSString *testApi = @"/1442142801331138639111.mp4";
     }else if (ServiceIs1(_currentRequest, @"uploadData")) {
         NSString *path = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
         NSString *realPath = [NSString stringWithFormat:@"%@%@",path,@"/demo.mp4"];
-        return realPath;
+        NSString *__path = [NSString stringWithFormat:@"%@%@",@"file://localhost/",realPath];
+        return __path;
     }
-    
     return nil;
 }
 

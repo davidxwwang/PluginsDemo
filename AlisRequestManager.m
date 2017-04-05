@@ -14,6 +14,8 @@
 #import "Service.h"
 #import "AlisRequestManager+AlisRequest.h"
 
+#define ALIS_SAFE_BLOCK(BlockName, ...) ({ !BlockName ? nil : BlockName(__VA_ARGS__); })
+
 @interface AlisRequestManager ()
 
 @property(weak,nonatomic) id<AlisRequestProtocol>requestModel;
@@ -150,126 +152,7 @@
 #pragma mark ---
 //访问网络前的最后准备，准备好请求地址，头head，参数parameters，body，url，回调方法等等
 - (void)prepareRequest:(AlisRequest *)request requestModel:(id<AlisRequestProtocol>)requestModel service:(Service *)service{
-    
     [self adapteAlisRequest:request requestModel:requestModel service:service];
-//    //设置请求的上下文
-//    request.context.makeRequestClass = service.serviceAgent;
-//    request.context.serviceName = service.serviceName;
-//    
-//    // NSAssert([requestModel respondsToSelector:@selector(api)], @"request API should not nil");
-//    
-//    if ([service.serviceAgent respondsToSelector:@selector(requestType)]) {
-//        request.requestType = [service.serviceAgent requestType];
-//    }else if ([requestModel respondsToSelector:@selector(requestType)]) {
-//        request.requestType = [requestModel requestType];
-//    }else{
-//        NSLog(@"'requestType' 没有设置，默认在AlisRequest中设置");
-//    }
-//    
-//    if (request.requestType == AlisRequestDownload) {
-//        if ([service.serviceAgent respondsToSelector:@selector(fileURL)]) {
-//            request.downloadPath = [service.serviceAgent fileURL];
-//        }else if ([requestModel respondsToSelector:@selector(fileURL)]) {
-//            request.downloadPath = [requestModel fileURL];
-//        }
-//        
-//        if(request.downloadPath == nil){
-//            NSLog(@"下载任务，没有设置下载的路径!!!");
-//        }
-//    }else if (request.requestType == AlisRequestUpload) {
-//        if ([service.serviceAgent respondsToSelector:@selector(fileURL)]) {
-//           [request addFormDataWithName:@"test1" fileURL:[service.serviceAgent fileURL]];
-//        }
-//            
-//        if ([service.serviceAgent respondsToSelector:@selector(uploadData)]) {
-//            [request addFormDataWithName:@"test2" fileData:[service.serviceAgent uploadData]];
-//        }
-//            
-//        if(request.downloadPath == nil){
-//            NSLog(@"下载任务，没有设置下载的路径!!!");
-//        }
-//    }
-//
-//    
-//    if ([service.serviceAgent respondsToSelector:@selector(httpMethod)]) {
-//        request.httpMethod = [service.serviceAgent httpMethod];
-//    }else if ([requestModel respondsToSelector:@selector(httpMethod)]) {
-//        request.httpMethod = [requestModel httpMethod];
-//    }else{
-//        NSLog(@"'httpMethod' 没有设置，默认在AlisRequest中设置");
-//    }
-//    
-//    if ([service.serviceAgent respondsToSelector:@selector(api)]) {
-//        request.api = [service.serviceAgent api];
-//    }else if ([requestModel respondsToSelector:@selector(api)]) {
-//        request.api = [requestModel api];
-//    }else{
-//        NSLog(@"'api' 没有设置，这个必须手动设置");
-//    }
-//    
-//    if ([service.serviceAgent respondsToSelector:@selector(server)]) {
-//        request.server = [service.serviceAgent server];
-//    }else if ([requestModel respondsToSelector:@selector(server)]) {
-//        request.server = [requestModel server];
-//    }else if (request.useGeneralServer == YES){
-//        request.server = _config.generalServer;
-//    }else{
-//        NSLog(@"'server' 没有设置，这个必须手动设置");
-//    }
-//    
-//    NSString *urlString = [NSString stringWithFormat:@"%@%@",request.server,request.api];
-//    NSAssert(urlString, @"url should not nil");
-//    request.url = urlString;//[requestModel url];
-//    
-//    NSMutableDictionary *header = [NSMutableDictionary dictionary];
-//    if ([service.serviceAgent respondsToSelector:@selector(requestHead)]) {
-//        [header addEntriesFromDictionary:[requestModel requestHead]];
-//    }
-//    if ([requestModel respondsToSelector:@selector(requestHead)]) {
-//        [header addEntriesFromDictionary:[requestModel requestHead]];
-//    }
-//    if (request.useGeneralHeaders) {
-//        [header addEntriesFromDictionary:self.config.generalHeader];
-//    }
-//    if (header == nil || header.count == 0){
-//        NSLog(@"'head' 一无所有");
-//    }
-//    request.header = header;
-//    
-//    NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
-//    if ([service.serviceAgent respondsToSelector:@selector(requestParams)]) {
-//        [header addEntriesFromDictionary:[requestModel requestParams]];
-//    }
-//    if ([requestModel respondsToSelector:@selector(requestParams)]) {
-//        [header addEntriesFromDictionary:[requestModel requestParams]];
-//    }
-//    if (request.useGeneralParameters) {
-//        [header addEntriesFromDictionary:self.config.generalParamters];
-//    }
-//    if (parameters == nil || parameters.count == 0) {
-//        NSLog(@"'head' 一无所有");
-//    }
-//    request.parameters = parameters;
-//    
-//    //请求的回调
-//    request.finishBlock = ^(AlisRequest *request ,AlisResponse *response ,AlisError *error){
-//        if(self.config.enableSync){
-//            dispatch_semaphore_signal(_semaphore);
-//        }
-//        //各个业务层的回调
-//        if (error) {
-//            [self failureWithError:error withRequest:request];
-//        }
-//        else{
-//            [self successWithResponse:response withRequest:request];
-//        }
-//    };
-//    
-//    __weak typeof (request) weakRequest = request;
-//    request.progressBlock = ^(AlisRequest *request,long long receivedSize, long long expectedSize){
-//        //各个业务层的回调
-//        weakRequest.bindRequestModel.businessLayer_requestProgressBlock(request,receivedSize,expectedSize);
-//    };
 }
 
 //访问网络前的最后准备，准备好请求地址，头head，参数parameters，body，url，回调方法等等
@@ -424,53 +307,95 @@
     return md5String;
 }
 
+#pragma mark -- https
+- (void)addSSLPinningURL:(NSString *)url {
+    NSParameterAssert(url);
+    
+//    if ([url hasPrefix:@"https"]) {
+//        NSString *rootDomainName = [self xm_rootDomainNameFromURL:url];
+//        if (rootDomainName && ![self.sslPinningHosts containsObject:rootDomainName]) {
+//            [self.sslPinningHosts addObject:rootDomainName];
+//        }
+//    }
+}
+
+- (void)addSSLPinningCert:(NSData *)cert {
+    NSParameterAssert(cert);
+    
+//    NSMutableSet *certSet;
+//    if (self.securitySessionManager.securityPolicy.pinnedCertificates.count > 0) {
+//        certSet = [NSMutableSet setWithSet:self.securitySessionManager.securityPolicy.pinnedCertificates];
+//    } else {
+//        certSet = [NSMutableSet set];
+//    }
+//    [certSet addObject:cert];
+//    [self.securitySessionManager.securityPolicy setPinnedCertificates:certSet];
+}
+
 #pragma mark -- chainRequest
 - (void)sendChainRequest:(AlisChainRConfigBlock )chainRequestConfigBlock success:(AlisChainRSucessBlock)success failure:(AlisChainRFailBlock)failure finish:(AlisChainRFinishedBlock)finish{
     
-    AlisChainRequestmanager *chainRequestmanager = [[AlisChainRequestmanager alloc]init];
+    AlisChainRequest *chainRequestmanager = [[AlisChainRequest alloc]initWithBlocks:success failure:failure finish:finish];
     if (chainRequestConfigBlock) {
         //设置chainRequestmanager
         chainRequestConfigBlock(chainRequestmanager);
     }
-    
     [self sendChainRequest:chainRequestmanager];
-    
-    //设置请求的MD5值。注：可以有其他方式
-    //  request.identifier = [self md5WithString:request.url];
-    //        NSString *requestIdentifer = request.bindRequestModel.currentService.serviceName;
-    //        if (requestIdentifer) {
-    //            (self.requestSet)[requestIdentifer] = request;
-    //        }
-    //        else{
-    //            NSLog(@"warning: 请求资源的名称不能为空");
-    //        }
 }
 
-- (void)sendChainRequest:(AlisChainRequestmanager *)chainRequestmanager{
+
+/**
+ 该方法负责将AlisRequest一个一个发送
+ @param chainRequestmanager  chainRequestmanager
+ */
+- (void)sendChainRequest:(AlisChainRequest *)chainRequestmanager{
     if (chainRequestmanager.runningRequest) {
         id<AlisPluginProtocol> plugin = [self.pluginManager plugin:@"AFNetwoking"];
+        //在这里解析两部分，一部分是公共的--AlisRequestConfig，一部分是自己的,
+        __weak AlisRequestManager *weakSelf = self;
+        [self prepareRequest:chainRequestmanager.runningRequest onProgress:^(AlisRequest *request, long long receivedSize, long long expectedSize) {
+        } onSuccess:nil 
+          onFailure:^(AlisRequest *request, AlisResponse *response, AlisError *error) {
+              [weakSelf handerResponse:chainRequestmanager request:request response:response error:error];      
+        } onFinished:^(AlisRequest *request, AlisResponse *response, AlisError *error) {
+             [weakSelf handerResponse:chainRequestmanager request:request response:response error:error]; 
+        }];
         
         //在这里解析两部分，一部分是公共的--AlisRequestConfig，一部分是自己的,
-        [self prepareRequest:chainRequestmanager.runningRequest onProgress:^(AlisRequest *request, long long receivedSize, long long expectedSize) {
-            
-        } onSuccess:^(AlisRequest *request, AlisResponse *response, AlisError *error) {
-            
-        } onFailure:^(AlisRequest *request, AlisResponse *response, AlisError *error) {
-            
-        } onFinished:^(AlisRequest *request, AlisResponse *response, AlisError *error) {
-            if([chainRequestmanager onFinishedOneRequest:request response:response error:error]){
-                //请求全部完成
-            }
-            else{
-                //请求还没有完全完成
-                if(chainRequestmanager.runningRequest){
-                    [self sendChainRequest:chainRequestmanager];
-                }
-            }
-        }];
+        [plugin perseRequest:chainRequestmanager.runningRequest config:_config];
+        //设置请求的MD5值。注：可以有其他方式
+        chainRequestmanager.runningRequest.identifier = [self md5WithString:chainRequestmanager.runningRequest.url];
+        NSString *requestIdentifer = chainRequestmanager.runningRequest.context.serviceName;
+//        if (requestIdentifer) {
+//            (self.requestSet)[requestIdentifer] = request;
+//        }
+//        else{
+//            NSLog(@"warning: 请求资源的名称不能为空");
+//        }
+
     }
 }
 
+/**
+ AlisRequest 请求回来的处理
+
+ @param chainRequestmanager chainRequestmanager
+ @param request 单个请求
+ @param response 单个请求的回复
+ @param error 单个请求回复的错误
+ */
+- (void)handerResponse:(AlisChainRequest *)chainRequestmanager request:(AlisRequest *)request response:(AlisResponse *)response error:(AlisError *)error{
+    if([chainRequestmanager onFinishedOneRequest:request response:response error:error]){
+        NSLog(@"AlisChainRequest中单个AlisRequest请求成功");
+        //请求全部完成
+    }
+    else{
+        //请求还没有完全完成
+        if(chainRequestmanager.runningRequest){
+            [self sendChainRequest:chainRequestmanager];
+        }
+    }  
+}
 
 - (void)prepareRequest:(AlisRequest *)request
             onProgress:(AlisRequestProgressRequest)progressBlock
@@ -478,71 +403,24 @@
              onFailure:(AlisRequestFinishRequest)failureBlock
             onFinished:(AlisRequestFinishRequest)finishedBlock {
     
-    // set callback blocks for the request object.
-    //    if (successBlock) {
-    //        [request setValue:successBlock forKey:@"_successBlock"];
-    //    }
-    //    if (failureBlock) {
-    //        request.finishBlock
-    //    }
+    if (progressBlock) {
+        request.progressBlock = progressBlock;
+    }
+    
+    if (failureBlock) {
+        request.finishBlock = failureBlock;
+    }
+    
     if (finishedBlock) {
         request.finishBlock = finishedBlock;
     }
-    //    if (progressBlock && request.requestType != kXMRequestNormal) {
-    //        [request setValue:progressBlock forKey:@"_progressBlock"];
-    //    }
-    
-    //    // add general user info to the request object.
-    //    if (!request.userInfo && self.generalUserInfo) {
-    //        request.userInfo = self.generalUserInfo;
-    //    }
-    //    
-    //    // add general parameters to the request object.
-    //    if (request.useGeneralParameters && self.generalParameters.count > 0) {
-    //        NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
-    //        [parameters addEntriesFromDictionary:self.generalParameters];
-    //        if (request.parameters.count > 0) {
-    //            [parameters addEntriesFromDictionary:request.parameters];
-    //        }
-    //        request.parameters = parameters;
-    //    }
-    //    
-    //    // add general headers to the request object.
-    //    if (request.useGeneralHeaders && self.generalHeaders.count > 0) {
-    //        NSMutableDictionary *headers = [NSMutableDictionary dictionary];
-    //        [headers addEntriesFromDictionary:self.generalHeaders];
-    //        if (request.headers) {
-    //            [headers addEntriesFromDictionary:request.headers];
-    //        }
-    //        request.headers = headers;
-    //    }
-    //    
-    //    // process url for the request object.
-    //    if (request.url.length == 0) {
-    //        if (request.server.length == 0 && request.useGeneralServer && self.generalServer.length > 0) {
-    //            request.server = self.generalServer;
-    //        }
-    //        if (request.api.length > 0) {
-    //            NSURL *baseURL = [NSURL URLWithString:request.server];
-    //            // ensure terminal slash for baseURL path, so that NSURL +URLWithString:relativeToURL: works as expected.
-    //            if ([[baseURL path] length] > 0 && ![[baseURL absoluteString] hasSuffix:@"/"]) {
-    //                baseURL = [baseURL URLByAppendingPathComponent:@""];
-    //            }
-    //            request.url = [[NSURL URLWithString:request.api relativeToURL:baseURL] absoluteString];
-    //        } else {
-    //            request.url = request.server;
-    //        }
-    //    }
-    //    NSAssert(request.url.length > 0, @"The request url can't be null.");
 }
 
 @end
 
+#pragma mark -- AlisChainRequest
 
-
-#pragma mark -- AlisChainRequestmanager
-
-@interface AlisChainRequestmanager()
+@interface AlisChainRequest()
 {
     //当前请求的 index
     NSInteger _chainIndex;
@@ -570,35 +448,39 @@
 
 @end
 
-@implementation AlisChainRequestmanager
+@implementation AlisChainRequest
 
-- (instancetype)init {
+- (instancetype)initWithBlocks:(AlisChainRSucessBlock)success
+               failure:(AlisChainRFailBlock)failure
+                finish:(AlisChainRFinishedBlock)finish{
     self = [super init];
     if (self) {
         _chainIndex = 0;
         _responseArray = [NSMutableArray array];
         _nextRequestArray = [NSMutableArray array];
+        
+        _chainSuccessBlock = success? success:nil;
+        _chainFailureBlock = failure? failure:nil;
+        _chainFinishedBlock = finish? finish:nil; 
     }
     return self;
 }
 
-- (AlisChainRequestmanager *)onFirst:(AlisRequestConfigBlock)firstBlock{
-    NSAssert(firstBlock != nil, @"firstBlock cannot be nil");
-    NSAssert(self.nextRequestArray == nil, @"");
+- (AlisChainRequest *)onFirst:(AlisRequestConfigBlock)firstBlock{
+    NSAssert(firstBlock, @"firstBlock cannot be nil");
+    NSAssert(self.nextRequestArray , @"");
     [_responseArray addObject:[NSNull null]];
     _runningRequest = [[AlisRequest alloc]init];
     firstBlock(_runningRequest);
-    
-    return nil;
+    return self;
 }
 
-- (AlisChainRequestmanager *)onNext:(AlisChainNextRBlock)nextBlock{
-    NSAssert(nextBlock != nil, @"firstBlock cannot be nil");
-    NSAssert(self.nextRequestArray == nil, @"");
+- (AlisChainRequest *)onNext:(AlisChainNextRBlock)nextBlock{
+    NSAssert(nextBlock, @"firstBlock cannot be nil");
+    NSAssert(self.nextRequestArray, @"");
     [_responseArray addObject:[NSNull null]];
     [_nextRequestArray addObject:nextBlock];
-    
-    return nil;
+    return self;
 }
 /**
  chainRequest每项请求完成都回调
@@ -608,7 +490,7 @@
  @param error error description
  @return YES:表示chain请求全部完成请求， NO:表示还没有都完成
  */
-- (BOOL)onFinishedOneRequest:(AlisRequest *)request response:(nullable id)responseObject error:(nullable NSError *)error{
+- (BOOL)onFinishedOneRequest:(AlisRequest *)request response:(nullable id)responseObject error:(nullable AlisError *)error{
     BOOL isFinished = NO;
     if (responseObject) {
         //得到第_chainIndex个请求的结果
@@ -619,26 +501,18 @@
             AlisChainNextRBlock nextBlock = _nextRequestArray[_chainIndex];
             //设置下一个请求参数
             nextBlock(_runningRequest,responseObject,error);
-            if (_chainSuccessBlock) {
-                _chainSuccessBlock(nil);
-            }
             
-            if (_chainFailureBlock) {
-                _chainFailureBlock(nil);
+            if (!error) {
+                ALIS_SAFE_BLOCK(_chainSuccessBlock,_responseArray);
             }
-            
+            else{
+                ALIS_SAFE_BLOCK(_chainFailureBlock,_responseArray);
+            }
             isFinished = NO;
-            
         }
         else{
-            if (_chainSuccessBlock) {
-                _chainSuccessBlock(nil);
-            }
-            
-            if (_chainFailureBlock) {
-                _chainFailureBlock(nil);
-            }
-            
+            ALIS_SAFE_BLOCK(_chainSuccessBlock,_responseArray);
+            ALIS_SAFE_BLOCK(_chainFinishedBlock,_responseArray,nil);
             isFinished = YES;
         }
     }
@@ -646,14 +520,26 @@
         if(error){
             [_responseArray replaceObjectAtIndex:_chainIndex withObject:error];
         }
-        if (_chainSuccessBlock) {
-            _chainSuccessBlock(nil);
+        if (_chainIndex < _nextRequestArray.count) {
+            _runningRequest = [AlisRequest request];
+            AlisChainNextRBlock nextBlock = _nextRequestArray[_chainIndex];
+            //设置下一个请求参数
+            nextBlock(_runningRequest,responseObject,error);
+            
+            if (!error) {
+                ALIS_SAFE_BLOCK(_chainSuccessBlock,_responseArray);
+            }
+            else{
+                ALIS_SAFE_BLOCK(_chainFailureBlock,_responseArray);
+            }
+
+            isFinished = NO;
         }
-        
-        if (_chainFailureBlock) {
-            _chainFailureBlock(nil);
+        else{
+            ALIS_SAFE_BLOCK(_chainSuccessBlock,_responseArray);
+            ALIS_SAFE_BLOCK(_chainFinishedBlock,_responseArray,nil);            
+            isFinished = YES;
         }
-        
     }
     
     _chainIndex++;
